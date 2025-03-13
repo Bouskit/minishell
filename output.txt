@@ -1,0 +1,2 @@
+Hello, this is written to output.txt
+Another line redirected to the file

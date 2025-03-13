@@ -6,7 +6,7 @@ int	main(int argc, char **argv, char **envp)
 	(void)argv;
 	t_env	*env;
 	char	*cmd_line;
-	t_token	*token;
+	t_token	*tokens;
 
 	env = init_env(envp);
     if (!env)
@@ -23,7 +23,8 @@ int	main(int argc, char **argv, char **envp)
 			break ;
 		}
 		add_history(cmd_line);
-		token = tokenization (cmd_line);
+		tokens = tokenization (cmd_line);
+		parse_tokens(tokens);
 
 	}
 

@@ -1,39 +1,44 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_substr.c                                        :+:      :+:    :+:   */
+/*   libft.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: xiazhang <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/30 18:38:17 by xiazhang          #+#    #+#             */
-/*   Updated: 2024/10/30 18:38:18 by xiazhang         ###   ########.fr       */
+/*   Created: 2025/03/08 21:32:10 by xiazhang          #+#    #+#             */
+/*   Updated: 2025/03/08 21:32:12 by xiazhang         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "libft.h"
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+char	*ft_strdup(const char *s)
 {
+	size_t	number;
 	char	*ptr;
-	size_t	i;
-	size_t	length;
+	char	*copy_ptr;
 
-	if (!s)
-		return (NULL);
-	length = ft_strlen(s);
-	if (start >= length)
-		len = 0;
-	else if (start + len > length)
-		len = length - start;
-	ptr = (char *)malloc((len + 1) * sizeof(char));
+	number = ft_strlen(s);
+	ptr = (char *)malloc((number + 1) * sizeof(char));
+	copy_ptr = ptr;
 	if (!ptr)
 		return (NULL);
-	i = 0;
-	while (i < len && s[start + i])
+	while (*s)
 	{
-		ptr[i] = s[start + i];
-		i++;
+		*copy_ptr = *s;
+		copy_ptr++;
+		s++;
 	}
-	ptr[i] = '\0';
+	*copy_ptr = '\0';
 	return (ptr);
 }
+
+size_t	ft_strlen(const char *s)
+{
+	size_t	len;
+
+	len = 0;
+	while (s[len])
+		len++;
+	return (len);
+}
+
 

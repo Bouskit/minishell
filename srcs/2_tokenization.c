@@ -33,21 +33,21 @@ t_token	*new_token(char *value, t_token_type type)
 	return (new);
 }
 
-void	add_token(t_token **token, t_token *new)
+void	add_token(t_token **tokens, t_token *new)
 {
 	t_token	*tmp;
 
 	if (!new)
 		return ;
-	if (!*token)
-		*token = new;
+	if (!*tokens)
+		*tokens = new;
 	else
 	{
-		tmp = *token;
+		tmp = *tokens;
 		while (tmp->next)
 		{
 			tmp = tmp->next;
-			printf("add token");
+			//printf("add token\n");
 		}
 		tmp->next = new;
 	}
@@ -77,71 +77,34 @@ int	is_operator(char c)
 {
 	return (c == '|' || c == '>' || c == '<');
 }
-
-char *ft_strndup(const char *s, size_t n)
+static char	*extract_quoted_string(char *cmd_line, int *i, char half_quote)
 {
-    size_t len = 0;
-    char *dup;
+	int		start;
+	char	*result;
+	int		len;
 
-    // Find the actual length to copy (min between string length and n)
-    while (s[len] && len < n)
-        len++;
-
-    // Allocate memory (+1 for null terminator)
-    dup = (char *)malloc(len + 1);
-    if (!dup)
-        return NULL;
-
-    // Copy the characters
-    for (size_t i = 0; i < len; i++)
-        dup[i] = s[i];
-
-    // Null-terminate the string
-    dup[len] = '\0';
-
-    return (dup);
-}
-
-size_t	ft_strlen(const char *s)
-{
-	size_t	len;
-
+	start = *i + 1;
 	len = 0;
-	while (s[len])
-		len++;
-	return (len);
-}
-
-char	*ft_strdup(const char *s)
-{
-	size_t	number;
-	char	*ptr;
-	char	*copy_ptr;
-
-	number = ft_strlen(s);
-	ptr = (char *)malloc((number + 1) * sizeof(char));
-	copy_ptr = ptr;
-	if (!ptr)
-		return (NULL);
-	while (*s)
+	while (cmd_line[*i] && cmd_line[*i] != half_quote)
 	{
-		*copy_ptr = *s;
-		copy_ptr++;
-		s++;
+		(*i)++;
+		len++;
 	}
-	*copy_ptr = '\0';
-	return (ptr);
+	if (cmd_line[*i] != half_quote)
+		return (NULL);
+	result = ft_substr(cmd_line, start, len);
+	return (result);
 }
-
 t_token	*tokenization(char *cmd_line)
 {
-	t_token	*token;
+	t_token	*tokens;
 	int		i;
 	char	op[3] = {0};
 	int		start;
 	char	*word;
+	char	*quoted_str;
 
-	token =  NULL;
+	tokens =  NULL;
 	i = 0;
 	while (cmd_line[i])
 	{
@@ -159,10 +122,25 @@ t_token	*tokenization(char *cmd_line)
 				i++;
             }
 			i++;
-			add_token(&token, new_token(op, operator_type(op)));
+			add_token(&tokens, new_token(op, operator_type(op)));
 			continue;
 		}
-		else
+		if (cmd_line[i] == '\'' || cmd_line[i] == '"')
+		{
+			if (cmd_line[i] == '\'')
+				tokens->type == QUOTE_SINGLE;
+			if (cmd_line[i] == '"')
+				tokens->type == QUOTE_DOUBLE;
+			quoted_str = extract_quoted_string(cmd_line, &i, cmd_line[i]);
+			if (!quoted_str)
+			{
+				ft_putstr_fd("unclosed quote", 2);
+				return (0);
+			}
+			add_token(&tokens, new_token(quoted_str, tokens->type));
+
+		}
+		else if(cmd_line[i] || cmd_line[i] != '\'' && cmd_line[i] != '"')
 		{
 			start = i;
 			while (cmd_line[i] && !isspace(cmd_line[i]) && !is_operator(cmd_line[i]))
@@ -170,19 +148,19 @@ t_token	*tokenization(char *cmd_line)
 				i++;
 			}
 			word = ft_strndup(&cmd_line[start], i - start);
-			add_token(&token, new_token(word, WORD));
+			add_token(&tokens, new_token(word, WORD));
 			free (word);
 			continue;
 		}
 	}
-	return (token);
+	return (tokens);
 }
 
 
 
 int main()
 {
-    char input[] = "echo ls | < > fda";
+    char input[] = "echo 'ls | < > fda";
     t_token *tokens = tokenization(input);
     
     while (tokens)

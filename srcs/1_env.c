@@ -11,6 +11,64 @@
 /* ************************************************************************** */
 #include "../include/minishell.h"
 
+t_env	*env_new_ele(char *env)
+{
+	t_env	*new;
+	int		i;
+	int		start;
+
+	i = 0;
+	new = malloc(sizeof(t_env));
+	if (!new)
+		return (NULL);
+	while (env[i] && env[i] != '=')
+		i++;
+	new->name = ft_substr(env, 0, i);
+	if (!new->name)
+	{
+		free(new->name);
+		return (NULL);
+	}
+	i++;
+	start = i;
+	while (env[i])
+		i++;
+	new->value = ft_substr(env, start, i);
+	if (!new->value)
+	{
+		free(new->value);
+		return (NULL);
+	}
+	new->next = NULL;
+	return (new);
+}
+
+int	add_env(t_env **env, t_env *new)
+{
+	t_env	*tmp;
+
+	if (!new)
+		return (0);
+	if (!(*env))
+		*env = new;
+	else
+	{
+		tmp = *env;
+		while (tmp->next)
+		{
+			tmp = tmp->next;
+			//printf ("add_env\n");
+		}
+		tmp->next = new;
+
+		/*tail = (*env)->prev;
+		tail->next = new;
+		new->prev = tail;
+		new->next = *env;
+		(*env)->prev = new;*/
+	}
+	return (1);
+}
 
 t_env *init_env(char **envp)
 {
@@ -25,7 +83,7 @@ t_env *init_env(char **envp)
 	}
 	while (envp[i])
 	{
-		if (!env_append(&env, envp[i]))
+		if (!add_env(&env, new (envp[i])))
 		{
 			free_env(env);
 			return (NULL);
@@ -42,7 +100,7 @@ t_env *init_default_env()
 	char	*pwd;
 
 	env = NULL;
-	if (!env_append(&env, ft_strdup("OLDPATH=")))
+	if (!add_env(&env, new(ft_strdup("OLDPATH="))))
 	{
 		free_env(env);
 		return (NULL);
@@ -54,83 +112,12 @@ t_env *init_default_env()
 		{
 			ft_strcpy(pwd, "PWD=");
 			ft_strcat(pwd, path);
-			env_append(&env, pwd);
+			add_env(&env, new(pwd));
 		}
 	}
 	return (env);
 }
 
-void free_env(t_env *env)
-{
-	t_env	*tmp;
-	t_env	*start;
 
-	start = env;
-	if (!env)
-		return;
-	while (env->var)
-	{
-		tmp = env->next;
-		free (env->var);
-		free (env);
-		env = tmp;
-		if (env == start)
-			break;
-	}
-}
 
-t_env	*env_new_ele(char *env)
-{
-	t_env	*new;
-
-	new = malloc(sizeof(t_env));
-	if (!new)
-		return (NULL);
-	new->var = ft_strdup(env);
-	if (!new->var)
-	{
-		free(new);
-		return (NULL);
-	}
-	new->prev = new;
-	new->next = new;
-	return (new);
-}
-
-int	env_append(t_env **env, char *var)
-{
-	t_env	*new;
-	t_env	*tail;
-	new = env_new_ele(var);
-	if (!new)
-		return (0);
-	if (!(*env))
-		*env = new;
-	else
-	{
-		tail = (*env)->prev;
-		tail->next = new;
-		new->prev = tail;
-		new->next = *env;
-		(*env)->prev = new;
-	}
-	return (1);
-}
-
-void	print_env(t_env *env)
-{
-	t_env	*tmp;
-
-	if (!env)
-		return ;
-	tmp = env;
-	printf ("%s", env->var);
-	tmp = tmp->next;
-	while (tmp != env)
-	{
-		printf("%s\n", tmp->var);
-		tmp = tmp->next;
-	}
-
-}
 
