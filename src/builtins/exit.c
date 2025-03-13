@@ -6,18 +6,15 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:19:36 by bboukach          #+#    #+#             */
-/*   Updated: 2025/03/08 16:37:02 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/03/10 22:35:50 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-void builtins_exit(char *input, t_status *status)
+void builtins_exit(char **args, t_status *status)
 {
-	char **args;
 	int exit_code;
-
-	args = ft_split(input, ' ');
 	
 	if (!args[1])
 	{

@@ -17,6 +17,7 @@ typedef struct s_env
 {
 	char *name;
 	char *value;
+	//struct *prev;
 	struct s_env *next;
 }t_env;
 
@@ -24,9 +25,9 @@ typedef struct s_env
 
 void builtins_env(t_env *e);
 void builtins_pwd(t_env *e);
-void builtins_exit(char *input, t_status *status);
-void builtins_export(char *input, t_env *e);
-void builtins_echo(char *input);
+void builtins_exit(char **args, t_status *status);
+void builtins_export(char **args, t_env *e);
+void builtins_echo(char **args);
 
 
 void do_input(char *input, t_env *e, t_status *status);
