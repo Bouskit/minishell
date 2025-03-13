@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:22:06 by bboukach          #+#    #+#             */
-/*   Updated: 2025/03/11 15:14:09 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/03/13 15:37:29 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,7 @@ void new_var(char *args, t_env **e)
 	while (args[i] != '=')
 		i++;
 	value = ft_strdup(args + i + 1);
-	new = env_new(ft_substr(args, 0, i), ft_strchr(args, '='));
-	free(value);
+	new = env_new(ft_substr(args, 0, i), value);
 	env_addback(e, new);
 }
 
@@ -40,9 +39,6 @@ int export_equal(char *args)
             return (0);
         i++;
     }
-    if (args[i] != '=')
-        return (0);
-    
     return (1);
 }
 
@@ -53,10 +49,10 @@ void export_print(t_env *e)
 	tmp = e;
 	while(tmp->next)
 	{
-		printf("export %s=%s\n", tmp->name, tmp->value);
+		printf("export %s=\"%s\"\n", tmp->name, tmp->value);
 		tmp = tmp->next;
 	}
-	printf("export %s=%s\n", tmp->name, tmp->value);
+	printf("export %s=\"%s\"\n", tmp->name, tmp->value);
 	return ;
 }
 
@@ -102,8 +98,10 @@ void builtins_export(char **args, t_env *e)
 		export_sort(&e);
 	while (args[i])
 	{
-		if (args[i] && ft_strchr(args[i], '='))
-			export_equal(args[i]);
+		if (args[i] && export_equal(args[i]))
+			new_var(args[i], &e);
+		else 
+			printf("minishell: export: \'%s\': not a valid identifier\n", args[i]);
 		i++;
 	}
 	return;
