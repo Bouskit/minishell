@@ -53,17 +53,17 @@ typedef struct	s_command
 {
 	char				**args;
 	char				*infile;
-	char				*outfile;
-	int					append;
+	t_r_out				rout;
+	char				*heredoc;
+	int					index;
 	struct	s_command	*next;
 }	t_command;
 
-typedef struct s_redir
+typedef struct s_r_out
 {
-    int type;       // TOKEN_OUTPUT, TOKEN_APPEND, TOKEN_INPUT, TOKEN_HEREDOC
-    char *file;     // The filename or heredoc delimiter
-    struct s_redir *next;
-} t_redir;
+	int				*append;      
+    char			**outfile;     
+} t_r_out;
 
 typedef struct s_mini
 {
@@ -95,3 +95,35 @@ char	*ft_strdup(const char *s);
 
 
 #endif
+
+
+typedef struct s_cmd 
+{
+    char *cmd_name;     // Command (e.g., 'echo')
+    char **args;        // Arguments for the command
+    t_redir *redir;     // Redirection (if any)
+    struct s_cmd *next; // Pointer to the next command in the pipeline
+} t_cmd;
+
+typedef struct s_pipe 
+{
+    t_cmd *cmd_left;   // Left side of the pipe (command before the pipe)
+    t_cmd *cmd_right;  // Right side of the pipe (command after the pipe)
+} t_pipe;
+
+typedef struct s_redir 
+{
+    int type;           // Type of redirection (e.g., OUTPUT, INPUT)
+    char *file;         // Filename for redirection
+    struct s_redir *next; // Next redirection (if any)
+} t_redir;
+
+
+typedef struct s_ast 
+{
+    t_cmd *cmd;       // Command node
+    t_pipe *pipe;     // Pipe node (if any)
+    t_redir *redir;   // Redirection node (if any)
+    struct s_ast *left;  // Left child in AST (e.g., for pipeline)
+    struct s_ast *right; // Right child in AST (e.g., for redirection)
+} t_ast;

@@ -15,12 +15,6 @@ int	check_syntax(t_token *token)
 {
 	if (!token)
 		return (0);
-	if (token->type == PIPE || token->type == R_IN
-			|| token->type == R_OUT || token->type == HEREDOC || token->type == APPEND)
-	{
-		ft_putstr_fd("Syntax error: Unexpected operator at the beginning.\n", 2);
-		return (0);
-	}
 	while (token)
 	{
 		if ((token->type == PIPE || token->type == R_IN
@@ -43,8 +37,9 @@ t_command	*new_command(void)
 		return (NULL);
 	cmd->args = NULL;
 	cmd->infile = NULL;
-	cmd->outfile = NULL;
-	cmd->append = 0;
+	cmd->rout.outfile = NULL;
+	cmd->rout.append = NULL;
+	cmd->index = 0;
 	cmd->next = NULL;
 	return (cmd);
 }
@@ -71,10 +66,14 @@ t_command	*parse_tokens(t_token *tokens)
 	t_command	*cmd;
 	t_command	*first_cmd;
 	int			ac;
+	int			out_i;
+	int			append_i;
 
 	cmd = new_command();
 	first_cmd = cmd;
 	ac = 0;
+	out_i = 0;
+	append_i = 0;
 	while (tokens)
 	{
 		if(tokens->type == WORD || tokens->type == QUOTE_DOUBLE || tokens->type == QUOTE_SINGLE)
@@ -91,15 +90,35 @@ t_command	*parse_tokens(t_token *tokens)
 		}
 		else if (tokens->type == R_OUT || tokens->type == APPEND)
 		{
-			cmd->append = (tokens->type == APPEND);
+			cmd->rout.append =realloc(cmd->rout.append, sizeof(int)* (append_i + 1));
+			if(!cmd->rout.append)
+			{
+				free_all();
+				return (NULL);
+			}
+			cmd->rout.append[append_i++] =(tokens->type == APPEND);
 			tokens = tokens->next;
-			if (tokens)
-				cmd->outfile = ft_strdup(tokens->value);
+			//if (tokens)
+			//{
+			cmd->rout.outfile= realloc(cmd->rout.outfile, sizeof(char *) * (out_i + 2));
+			if(!cmd->rout.outfile)
+			{
+				free_all();
+				return (NULL);
+			}
+			cmd->rout.outfile[out_i++] = ft_strdup(tokens->value);
+			cmd->rout.outfile[out_i] = NULL;
+			//}
+			/*else
+			{
+				free_all()
+			}*/
 		}
 		else if(tokens->type == PIPE)
 		{
 			add_command(&first_cmd, cmd);
 			cmd = new_command();
+			cmd->index++;
 		}
 		tokens = tokens->next;
 	}
