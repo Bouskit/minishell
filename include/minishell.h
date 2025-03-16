@@ -54,7 +54,7 @@ typedef struct	s_command
 	char				**args;
 	char				*infile;
 	t_r_out				rout;
-	char				*heredoc;
+	char				**heredoc;
 	int					index;
 	struct	s_command	*next;
 }	t_command;

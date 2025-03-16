@@ -127,16 +127,16 @@ t_token	*tokenization(char *cmd_line)
 		}
 		if (cmd_line[i] == '\'' || cmd_line[i] == '"')
 		{
-			if (cmd_line[i] == '\'')
-				tokens->type == QUOTE_SINGLE;
-			if (cmd_line[i] == '"')
-				tokens->type == QUOTE_DOUBLE;
 			quoted_str = extract_quoted_string(cmd_line, &i, cmd_line[i]);
 			if (!quoted_str)
 			{
 				ft_putstr_fd("unclosed quote", 2);
 				return (0);
 			}
+			if (cmd_line[i] == '\'')
+				tokens->type == QUOTE_SINGLE;
+			if (cmd_line[i] == '"')
+				tokens->type == QUOTE_DOUBLE;
 			add_token(&tokens, new_token(quoted_str, tokens->type));
 
 		}

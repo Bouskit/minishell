@@ -68,6 +68,7 @@ t_command	*parse_tokens(t_token *tokens)
 	int			ac;
 	int			out_i;
 	int			append_i;
+	int			heredoc_i;
 
 	cmd = new_command();
 	first_cmd = cmd;
@@ -79,6 +80,8 @@ t_command	*parse_tokens(t_token *tokens)
 		if(tokens->type == WORD || tokens->type == QUOTE_DOUBLE || tokens->type == QUOTE_SINGLE)
 		{
 			cmd->args = realloc(cmd->args, sizeof(char *) * (ac + 2));
+			if (!cmd->args)
+				//return(free_all);
 			cmd->args[ac++] = ft_strdup(tokens->value);
 			cmd->args[ac] = NULL;
 		}
@@ -113,6 +116,18 @@ t_command	*parse_tokens(t_token *tokens)
 			{
 				free_all()
 			}*/
+		}
+		else if (tokens->type ==  HEREDOC)
+		{
+			tokens = tokens->next;
+			if (tokens)
+			{
+				cmd->heredoc = realloc(cmd->heredoc, sizeof(char *) * (heredoc_i + 2));
+				if (!cmd->heredoc)
+					//return (free_all());
+				cmd->heredoc[heredoc_i++] = ft_strdup(tokens->value);
+				cmd->heredoc[heredoc_i] = NULL;
+			}
 		}
 		else if(tokens->type == PIPE)
 		{
