@@ -29,7 +29,7 @@ int	check_syntax(t_token *token)
 	return (1);
 }
 
-t_command	*new_command(void)
+t_command	*new_command(int index)
 {
 	t_command	*cmd;
 	cmd = malloc(sizeof(t_command));
@@ -39,7 +39,7 @@ t_command	*new_command(void)
 	cmd->infile = NULL;
 	cmd->rout.outfile = NULL;
 	cmd->rout.append = NULL;
-	cmd->index = 0;
+	cmd->index = index;
 	cmd->next = NULL;
 	return (cmd);
 }
@@ -61,6 +61,7 @@ int	add_command(t_command **cmds, t_command *new)
 		tmp = tmp->next;
 	}
 	tmp->next = new;
+	return (1);
 }
 
 t_command	*parse_tokens(t_token *tokens)
@@ -71,36 +72,44 @@ t_command	*parse_tokens(t_token *tokens)
 	int			out_i;
 	int			append_i;
 	int			heredoc_i;
+	int			cmd_count;
 
-	cmd = new_command();
-	first_cmd = cmd;
 	ac = 0;
 	out_i = 0;
 	append_i = 0;
+	heredoc_i = 0;
+	cmd_count = 1;
+	cmd = new_command(++cmd_count);
+	first_cmd = cmd;
 	while (tokens)
 	{
 		if(tokens->type == WORD || tokens->type == QUOTE_DOUBLE || tokens->type == QUOTE_SINGLE)
 		{
 			cmd->args = realloc(cmd->args, sizeof(char *) * (ac + 2));
 			if (!cmd->args)
+			{
+				free_cmd(first_cmd);
 				return(NULL);
+			}
 			cmd->args[ac] = ft_strdup(tokens->value);
 			if (!cmd->args[ac])
 			{
-				free_cmd(cmd);
+				free_cmd(first_cmd);
 				return (NULL);
 			}
-			ac++;
-			cmd->args[ac] = NULL;
+			cmd->args[++ac] = NULL;
 		}
 		else if (tokens->type == R_IN)
 		{
 			tokens = tokens->next;
 			if (tokens)
+			{
+				free(cmd->infile);
 				cmd->infile = ft_strdup(tokens->value);
+			}
 			if (!cmd->infile)
 			{
-				free_cmd(cmd);
+				free_cmd(first_cmd);
 				return (NULL);
 			}
 		}
@@ -109,24 +118,24 @@ t_command	*parse_tokens(t_token *tokens)
 			cmd->rout.append =realloc(cmd->rout.append, sizeof(int)* (append_i + 1));
 			if(!cmd->rout.append)
 			{
-				free_cmd(cmd);
-				return (NULL);
+				free_cmd(first_cmd);
+				return (NULL);                                                                                                               
 			}
 			cmd->rout.append[append_i++] =(tokens->type == APPEND);
 			tokens = tokens->next;
 			cmd->rout.outfile= realloc(cmd->rout.outfile, sizeof(char *) * (out_i + 2));
 			if(!cmd->rout.outfile)
 			{
-				free_all();
+				free_cmd(first_cmd);
 				return (NULL);
 			}
-			cmd->rout.outfile[out_i++] = ft_strdup(tokens->value);
-			cmd->rout.outfile[out_i] = NULL;
-			//}
-			/*else
+			cmd->rout.outfile[out_i] = ft_strdup(tokens->value);
+			if (!cmd->rout.outfile[out_i])
 			{
-				free_all()
-			}*/
+				free_cmd(first_cmd);
+				return (NULL);
+			}
+			cmd->rout.outfile[++out_i] = NULL;
 		}
 		else if (tokens->type ==  HEREDOC)
 		{
@@ -135,16 +144,27 @@ t_command	*parse_tokens(t_token *tokens)
 			{
 				cmd->heredoc = realloc(cmd->heredoc, sizeof(char *) * (heredoc_i + 2));
 				if (!cmd->heredoc)
-					//return (free_all());
-				cmd->heredoc[heredoc_i++] = ft_strdup(tokens->value);
-				cmd->heredoc[heredoc_i] = NULL;
+				{
+					free_cmd(first_cmd);
+					return (NULL);
+				}
+				cmd->heredoc[heredoc_i] = ft_strdup(tokens->value);
+				cmd->heredoc[++heredoc_i] = NULL;
 			}
 		}
 		else if(tokens->type == PIPE)
 		{
-			add_command(&first_cmd, cmd);
-			cmd = new_command();
-			cmd->index++;
+			cmd = new_command(cmd_count++);
+			if (!add_command(&first_cmd, cmd))
+			{
+				free_cmd(first_cmd);
+				return (NULL);
+			}
+			ac = 0;
+			out_i = 0;
+			append_i = 0;
+			heredoc_i = 0;
+			
 		}
 		tokens = tokens->next;
 	}

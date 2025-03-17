@@ -50,21 +50,22 @@ typedef struct	s_token
 	struct s_token	*next;
 }	t_token;
 
+typedef struct s_out
+{
+	int				*append;      
+    char			**outfile;     
+} t_out;
+
 typedef struct	s_command
 {
 	char				**args;
 	char				*infile;
-	t_r_out				rout;
+	t_out				rout;
 	char				**heredoc;
 	int					index;
 	struct	s_command	*next;
 }	t_command;
 
-typedef struct s_r_out
-{
-	int				*append;      
-    char			**outfile;     
-} t_r_out;
 
 /*typedef struct s_mini
 {
@@ -76,6 +77,7 @@ typedef struct s_r_out
 
 extern	t_mini	*mini;*/
 
+void print_commands(t_command *cmds);
 int	main(int ac, char **av, char **env);
 
 //set up the environment
@@ -97,7 +99,7 @@ t_token			*tokenization(char *cmd_line);
 //parsing
 int				check_syntax(t_token *tokens);
 t_command		*new_command();
-void			add_command(t_command **cmds, t_command *new);
+int				add_command(t_command **cmds, t_command *new);
 t_command		*parse_tokens(t_token *tokens);
 
 //utils
@@ -109,7 +111,7 @@ char	*ft_strdup(const char *s);
 //free all kinds
 void	free_env(t_env *env);
 void	free_tokens(t_token *tokens);
-void	free_commands(t_command *cmds);	
+void	free_cmd(t_command *cmds);
 
 
 #endif
