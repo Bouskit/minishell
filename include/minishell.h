@@ -32,14 +32,15 @@ typedef struct s_env
 
 typedef enum e_token_type//add builtin
 {
-	WORD,
-	PIPE,
-	R_IN,// <: Redirects a file’s content as input to a command. "cat < file.txt"
-	HEREDOC,// <<
-	R_OUT,//>: Overwrites the file with the command’s output."echo "Hello" > file.txt
-	APPEND,//>>: Appends the output to the file instead of overwriting.
-	QUOTE_SINGLE,
-	QUOTE_DOUBLE,
+	WORD,//0
+	PIPE,//1 |
+	R_IN,//2 <: Redirects a file’s content as input to a command. "cat < file.txt"
+	HEREDOC,//3 <<
+	R_OUT,//4 >: Overwrites the file with the command’s output."echo "Hello" > file.txt
+	APPEND,//5 >>: Appends the output to the file instead of overwriting.
+	QUOTE_SINGLE,//6
+	QUOTE_DOUBLE,//7
+	ERROR = -2
 }	t_token_type;
 
 typedef struct	s_token
@@ -65,7 +66,7 @@ typedef struct s_r_out
     char			**outfile;     
 } t_r_out;
 
-typedef struct s_mini
+/*typedef struct s_mini
 {
 	t_env			*env;
 	t_token			*tokens;
@@ -73,57 +74,42 @@ typedef struct s_mini
 	struct s_mini	*next;
 }	t_mini;
 
-extern	t_mini	*mini;
+extern	t_mini	*mini;*/
 
 int	main(int ac, char **av, char **env);
 
 //set up the environment
 t_env	*env_new_ele(char *env);
-int		add_env(t_env **env, char *var);
-t_env	*init_env(char **env);
+int		add_env(t_env **env, t_env *new);
+t_env	*init_env(char **envp);
 t_env	*init_default_env();
 void	free_env(t_env *env);
-void	print_env(t_env *env);
+void	print_env(t_env *env);//------------test helper function
 
+//tokenization
+t_token			*new_token(char *value, t_token_type type);
+int				add_token(t_token **tokens, t_token *new);
+t_token_type	operator_type(char	*str);
+int				ft_is_space(char c);
+int				is_operator(char c);
+t_token			*tokenization(char *cmd_line);
+
+//parsing
+int				check_syntax(t_token *tokens);
+t_command		*new_command();
+void			add_command(t_command **cmds, t_command *new);
+t_command		*parse_tokens(t_token *tokens);
 
 //utils
-void *ft_realloc(void *ptr, size_t new_size);
-char *ft_strndup(const char *s, size_t n);
+void 	*ft_realloc(void *ptr, size_t new_size);
+char 	*ft_strndup(const char *s, size_t n);
 size_t	ft_strlen(const char *s);
 char	*ft_strdup(const char *s);
 
+//free all kinds
+void	free_env(t_env *env);
+void	free_tokens(t_token *tokens);
+void	free_commands(t_command *cmds);	
 
 
 #endif
-
-
-typedef struct s_cmd 
-{
-    char *cmd_name;     // Command (e.g., 'echo')
-    char **args;        // Arguments for the command
-    t_redir *redir;     // Redirection (if any)
-    struct s_cmd *next; // Pointer to the next command in the pipeline
-} t_cmd;
-
-typedef struct s_pipe 
-{
-    t_cmd *cmd_left;   // Left side of the pipe (command before the pipe)
-    t_cmd *cmd_right;  // Right side of the pipe (command after the pipe)
-} t_pipe;
-
-typedef struct s_redir 
-{
-    int type;           // Type of redirection (e.g., OUTPUT, INPUT)
-    char *file;         // Filename for redirection
-    struct s_redir *next; // Next redirection (if any)
-} t_redir;
-
-
-typedef struct s_ast 
-{
-    t_cmd *cmd;       // Command node
-    t_pipe *pipe;     // Pipe node (if any)
-    t_redir *redir;   // Redirection node (if any)
-    struct s_ast *left;  // Left child in AST (e.g., for pipeline)
-    struct s_ast *right; // Right child in AST (e.g., for redirection)
-} t_ast;

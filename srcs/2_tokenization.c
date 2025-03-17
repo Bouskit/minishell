@@ -22,24 +22,29 @@ t_token	*new_token(char *value, t_token_type type)
 	new = malloc(sizeof(t_token));
 	if(!new)
 		return (NULL);
+	new->next = NULL;
 	new->value = ft_strdup(value);
 	if (!new->value)
 	{
-		free(new);
+		free_tokens(new);
 		return (NULL);
 	}
 	new->type = type;
-	new->next = NULL;
+	if (new->type == ERROR)
+	{
+		free_tokens(new);
+		return (NULL);
+	}
 	return (new);
 }
 
-void	add_token(t_token **tokens, t_token *new)
+int	add_token(t_token **tokens, t_token *new)
 {
 	t_token	*tmp;
 
-	if (!new)
-		return ;
-	if (!*tokens)
+	if (!new || !tokens)
+		return (0) ;
+	if (!(*tokens))
 		*tokens = new;
 	else
 	{
@@ -51,20 +56,21 @@ void	add_token(t_token **tokens, t_token *new)
 		}
 		tmp->next = new;
 	}
+	return (1);
 }
 
 t_token_type	operator_type(char	*str)
 {
 	if (ft_strlen(str) == 2)
 	{
-		if ((!strncmp(str, ">>", 2))) return (APPEND);
-		if ((!strncmp(str, "<<", 2))) return (HEREDOC);
+		if ((!ft_strncmp(str, ">>", 2))) return (APPEND);
+		if ((!ft_strncmp(str, "<<", 2))) return (HEREDOC);
 	}
-	if ((!strncmp(str, "|", 1))) return (PIPE);
-	if ((!strncmp(str, ">", 1))) return (R_OUT);
-	if ((!strncmp(str, "<", 1))) return (R_IN);
+	if ((!ft_strncmp(str, "|", 1))) return (PIPE);
+	if ((!ft_strncmp(str, ">", 1))) return (R_OUT);
+	if ((!ft_strncmp(str, "<", 1))) return (R_IN);
 	fprintf(stderr, "Error: Unexpected input to get_operator_type: %s\n", str);
-	return (ERROR_TOKEN);
+	return (ERROR);
 }
 
 int	ft_is_space(char c)
@@ -83,7 +89,7 @@ static char	*extract_quoted_string(char *cmd_line, int *i, char half_quote)
 	char	*result;
 	int		len;
 
-	start = *i + 1;
+	start = ++(*i);
 	len = 0;
 	while (cmd_line[*i] && cmd_line[*i] != half_quote)
 	{
@@ -91,8 +97,16 @@ static char	*extract_quoted_string(char *cmd_line, int *i, char half_quote)
 		len++;
 	}
 	if (cmd_line[*i] != half_quote)
+	{
+		ft_putstr_fd("Error: unclosed quote\n", 2);
 		return (NULL);
+	}
 	result = ft_substr(cmd_line, start, len);
+	if (!result)
+	{	
+		ft_putstr_fd("Error: Failed to malloc\n", 2);
+		return (NULL);
+	}
 	return (result);
 }
 t_token	*tokenization(char *cmd_line)
@@ -116,31 +130,54 @@ t_token	*tokenization(char *cmd_line)
 		if (is_operator(cmd_line[i]))
 		{
 			op[0] = cmd_line[i];
-			if ((cmd_line[i] == '>' || cmd_line[i] == '<') && cmd_line[i + 1] && cmd_line[i + 1] == cmd_line[i])
+			if ((cmd_line[i] == '>' || cmd_line[i] == '<') && cmd_line[i + 1] == cmd_line[i])
             {
                 op[1] = cmd_line[i + 1];
+				op[2] = '\0';
 				i++;
             }
+			else
+				op[1] = '\0';
 			i++;
-			add_token(&tokens, new_token(op, operator_type(op)));
+			if(!add_token(&tokens, new_token(op, operator_type(op))))
+			{
+				
+				free_tokens(tokens);
+				return (NULL);
+			}
 			continue;
 		}
 		if (cmd_line[i] == '\'' || cmd_line[i] == '"')
 		{
-			quoted_str = extract_quoted_string(cmd_line, &i, cmd_line[i]);
+			char current_quote;
+			current_quote = cmd_line[i];
+			quoted_str = extract_quoted_string(cmd_line, &i, current_quote);
 			if (!quoted_str)
 			{
-				ft_putstr_fd("unclosed quote", 2);
+				free_tokens(tokens);
 				return (0);
 			}
-			if (cmd_line[i] == '\'')
-				tokens->type == QUOTE_SINGLE;
-			if (cmd_line[i] == '"')
-				tokens->type == QUOTE_DOUBLE;
-			add_token(&tokens, new_token(quoted_str, tokens->type));
-
+			if (current_quote == '\'')
+			{
+				if(!add_token(&tokens, new_token(quoted_str, QUOTE_SINGLE)))
+				{
+					free_tokens(tokens);
+					return (NULL);
+				}
+			}
+			if (current_quote == '"')
+			{	
+				if(!add_token(&tokens, new_token(quoted_str, QUOTE_DOUBLE)))
+				{
+					free_tokens(tokens);
+					return (NULL);
+				}
+			}
+			free (quoted_str);
+			i++;
+			continue;
 		}
-		else if(cmd_line[i] || cmd_line[i] != '\'' && cmd_line[i] != '"')
+		else
 		{
 			start = i;
 			while (cmd_line[i] && !isspace(cmd_line[i]) && !is_operator(cmd_line[i]))
@@ -148,7 +185,11 @@ t_token	*tokenization(char *cmd_line)
 				i++;
 			}
 			word = ft_strndup(&cmd_line[start], i - start);
-			add_token(&tokens, new_token(word, WORD));
+			if (!add_token(&tokens, new_token(word, WORD)))
+			{
+				free_tokens(tokens);
+				return (NULL);
+			}
 			free (word);
 			continue;
 		}
@@ -156,17 +197,3 @@ t_token	*tokenization(char *cmd_line)
 	return (tokens);
 }
 
-
-
-int main()
-{
-    char input[] = "echo 'ls | < > fda";
-    t_token *tokens = tokenization(input);
-    
-    while (tokens)
-    {
-        printf("Token: [%s] Type: [%d]\n", tokens->value, tokens->type);
-        tokens = tokens->next;
-    }
-    return 0;
-}

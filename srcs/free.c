@@ -26,7 +26,6 @@ void free_env(t_env *env)
 		if (tmp->value)
 			free (tmp->value);
 		free(tmp);
-		env = tmp;
 	}
 }
 
@@ -40,7 +39,8 @@ void	free_tokens(t_token *tokens)
 	{
 		tmp = tokens;
 		tokens = tokens->next;
-		free (tmp->value);
+		if (tmp->value)
+			free (tmp->value);
 		free (tmp);
 	}
 }
@@ -50,19 +50,35 @@ void	free_cmd(t_command *cmds)
 	t_command	*tmp;
 	int	i;
 
-	i = 0;
 	while (cmds)
 	{
 		tmp =  cmds;
 		cmds = cmds->next;
-		while (tmp->args[i++])
+		if (tmp->args)
 		{
-			free(tmp->args[i]);
+			i = 0;
+			while (tmp->args[i])
+				free(tmp->args[i++]);
+			free (tmp->args);//free tmp->args lists
 		}
 		if (tmp->infile)
-			free (tmp->infile)
-		if (tmp->outifle)
-			free (tmp->outfile);
-
+			free (tmp->infile);// free infile pointer
+		if (tmp->rout.append)
+			free (tmp->rout.append);
+		if (tmp->rout.outfile)
+		{
+			i = 0;
+			while (tmp->rout.outfile[i])
+				free(tmp->rout.outfile[i++]);
+			free (tmp->rout.outfile);//free rout.outfile lists
+		}
+		if (tmp->heredoc)
+		{
+			i = 0;
+			while (tmp->heredoc[i++])
+				free(tmp->heredoc[i]);
+			free (tmp->heredoc);//free heredoc lists
+		}
+		free(tmp);
 	}
 }

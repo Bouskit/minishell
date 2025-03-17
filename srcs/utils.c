@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 #include "../include/minishell.h"
 
-void *ft_realloc(void *ptr, size_t new_size)
+/*void *ft_realloc(void *ptr, size_t new_size)
 {
     // If new_size is 0, free memory and return NULL
     if (new_size == 0)
@@ -37,11 +37,10 @@ void *ft_realloc(void *ptr, size_t new_size)
     size_t old_size = malloc_usable_size(ptr); // This function is platform-dependent
     memcpy(new_ptr, ptr, old_size < new_size ? old_size : new_size);
     
-    // Free the old memory block
     free(ptr);
     
     return new_ptr;
-}
+}*/
 
 char *ft_strndup(const char *s, size_t n)
 {

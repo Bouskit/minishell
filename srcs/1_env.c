@@ -21,12 +21,13 @@ t_env	*env_new_ele(char *env)
 	new = malloc(sizeof(t_env));
 	if (!new)
 		return (NULL);
+	new->next = NULL;
 	while (env[i] && env[i] != '=')
 		i++;
 	new->name = ft_substr(env, 0, i);
 	if (!new->name)
 	{
-		free(new->name);
+		free_env(new);
 		return (NULL);
 	}
 	i++;
@@ -36,10 +37,9 @@ t_env	*env_new_ele(char *env)
 	new->value = ft_substr(env, start, i);
 	if (!new->value)
 	{
-		free(new->value);
+		free_env(new);
 		return (NULL);
-	}
-	new->next = NULL;
+	}	
 	return (new);
 }
 
@@ -83,7 +83,7 @@ t_env *init_env(char **envp)
 	}
 	while (envp[i])
 	{
-		if (!add_env(&env, new (envp[i])))
+		if (!add_env(&env, env_new_ele (envp[i])))
 		{
 			free_env(env);
 			return (NULL);
@@ -100,7 +100,7 @@ t_env *init_default_env()
 	char	*pwd;
 
 	env = NULL;
-	if (!add_env(&env, new(ft_strdup("OLDPATH="))))
+	if (!add_env(&env, env_new_ele(ft_strdup("OLDPATH="))))
 	{
 		free_env(env);
 		return (NULL);
@@ -112,7 +112,7 @@ t_env *init_default_env()
 		{
 			ft_strcpy(pwd, "PWD=");
 			ft_strcat(pwd, path);
-			add_env(&env, new(pwd));
+			add_env(&env, env_new_ele(pwd));
 		}
 	}
 	return (env);

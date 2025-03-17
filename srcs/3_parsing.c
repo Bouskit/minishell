@@ -44,14 +44,16 @@ t_command	*new_command(void)
 	return (cmd);
 }
 
-void	add_command(t_command **cmds, t_command *new)
+int	add_command(t_command **cmds, t_command *new)
 {
 	t_command	*tmp;
 
+	if (!new || !cmds)
+		return (0);
 	if (!*cmds)
 	{
 		*cmds = new;
-		return ;
+		return (1);
 	}
 	tmp = *cmds;
 	while (tmp->next)
@@ -81,8 +83,14 @@ t_command	*parse_tokens(t_token *tokens)
 		{
 			cmd->args = realloc(cmd->args, sizeof(char *) * (ac + 2));
 			if (!cmd->args)
-				//return(free_all);
-			cmd->args[ac++] = ft_strdup(tokens->value);
+				return(NULL);
+			cmd->args[ac] = ft_strdup(tokens->value);
+			if (!cmd->args[ac])
+			{
+				free_cmd(cmd);
+				return (NULL);
+			}
+			ac++;
 			cmd->args[ac] = NULL;
 		}
 		else if (tokens->type == R_IN)
@@ -90,19 +98,22 @@ t_command	*parse_tokens(t_token *tokens)
 			tokens = tokens->next;
 			if (tokens)
 				cmd->infile = ft_strdup(tokens->value);
+			if (!cmd->infile)
+			{
+				free_cmd(cmd);
+				return (NULL);
+			}
 		}
 		else if (tokens->type == R_OUT || tokens->type == APPEND)
 		{
 			cmd->rout.append =realloc(cmd->rout.append, sizeof(int)* (append_i + 1));
 			if(!cmd->rout.append)
 			{
-				free_all();
+				free_cmd(cmd);
 				return (NULL);
 			}
 			cmd->rout.append[append_i++] =(tokens->type == APPEND);
 			tokens = tokens->next;
-			//if (tokens)
-			//{
 			cmd->rout.outfile= realloc(cmd->rout.outfile, sizeof(char *) * (out_i + 2));
 			if(!cmd->rout.outfile)
 			{
