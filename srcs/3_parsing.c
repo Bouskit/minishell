@@ -72,14 +72,16 @@ t_command	*parse_tokens(t_token *tokens)
 	int			out_i;
 	int			append_i;
 	int			heredoc_i;
+	int 		in_i;
 	int			cmd_count;
 
 	ac = 0;
 	out_i = 0;
 	append_i = 0;
 	heredoc_i = 0;
-	cmd_count = 1;
-	cmd = new_command(++cmd_count);
+	in_i = 0;
+	cmd_count = 0;
+	cmd = new_command(cmd_count++);
 	first_cmd = cmd;
 	while (tokens)
 	{
@@ -101,17 +103,20 @@ t_command	*parse_tokens(t_token *tokens)
 		}
 		else if (tokens->type == R_IN)
 		{
-			tokens = tokens->next;
-			if (tokens)
-			{
-				free(cmd->infile);
-				cmd->infile = ft_strdup(tokens->value);
-			}
+			cmd->infile = realloc (cmd->infile, sizeof(char *) * (in_i + 2));
 			if (!cmd->infile)
 			{
 				free_cmd(first_cmd);
-				return (NULL);
+				return(NULL);
 			}
+			tokens = tokens->next;
+			cmd->infile[in_i] = ft_strdup(tokens->value);
+			if (!cmd->infile[in_i])
+			{
+				free_cmd(first_cmd);
+				return(NULL);
+			}
+			cmd->infile[++in_i] = NULL;
 		}
 		else if (tokens->type == R_OUT || tokens->type == APPEND)
 		{
@@ -163,8 +168,7 @@ t_command	*parse_tokens(t_token *tokens)
 			ac = 0;
 			out_i = 0;
 			append_i = 0;
-			heredoc_i = 0;
-			
+			heredoc_i = 0;		
 		}
 		tokens = tokens->next;
 	}

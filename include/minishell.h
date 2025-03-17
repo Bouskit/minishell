@@ -59,7 +59,7 @@ typedef struct s_out
 typedef struct	s_command
 {
 	char				**args;
-	char				*infile;
+	char				**infile;
 	t_out				rout;
 	char				**heredoc;
 	int					index;

@@ -10,7 +10,7 @@ void print_commands(t_command *cmds)
     printf("\n🔹 Parsed Commands:\n");
     while (cmds)
     {
-        printf("🔹 Command \n");
+        printf("🔹 Command %d\n", cmds->index);
 
         // Print arguments
         if (cmds->args)
