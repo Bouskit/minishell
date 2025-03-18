@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:22:06 by bboukach          #+#    #+#             */
-/*   Updated: 2025/03/13 15:37:29 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/03/14 21:10:34 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,37 @@ void new_var(char *args, t_env **e)
 	t_env *new;
 	int i = 0;
 	char *value;
+	char *name;
 
 	tmp = *e;
-	while (args[i] != '=')
-		i++;
-	value = ft_strdup(args + i + 1);
-	new = env_new(ft_substr(args, 0, i), value);
+	value = NULL;
+	if (ft_strchr(args, '='))
+	{
+		while (args[i] != '=')
+			i++;
+		name = ft_substr(args, 0, i);
+		if (args[i] != '\0')
+			value = ft_substr(args, i + 1, ft_strlen(args));
+	}
+	else 
+		name = ft_strdup(args);
+	
+	while (tmp)
+	{
+		if(!ft_strcmp(tmp->name, name))
+		{
+			if (value)
+			{
+				free(tmp->value);
+				tmp->value = value;
+			}
+			free(name);
+			return;
+		}
+		tmp = tmp->next;
+	}
+	
+	new = env_new(name, value);
 	env_addback(e, new);
 }
 
@@ -47,12 +72,14 @@ void export_print(t_env *e)
 	t_env *tmp;
 
 	tmp = e;
-	while(tmp->next)
+	while(tmp)
 	{
-		printf("export %s=\"%s\"\n", tmp->name, tmp->value);
+		if (tmp->value)
+			printf("export %s=\"%s\"\n", tmp->name, tmp->value);
+		else 
+			printf("export %s\n", tmp->name);
 		tmp = tmp->next;
 	}
-	printf("export %s=\"%s\"\n", tmp->name, tmp->value);
 	return ;
 }
 
@@ -64,7 +91,7 @@ void export_sort(t_env **e)
 	int i;
 	int len = env_size(*e);
 
-	while(swap)
+	while (swap)
 	{
 		swap = 0;
 		i = 0;
@@ -91,15 +118,15 @@ void export_sort(t_env **e)
 	export_print(*e);
 }
 
-void builtins_export(char **args, t_env *e)
+void builtins_export(char **args, t_env **e)
 {
 	int i = 1;
 	if (!args[1])
-		export_sort(&e);
+		export_sort(e);
 	while (args[i])
 	{
 		if (args[i] && export_equal(args[i]))
-			new_var(args[i], &e);
+			new_var(args[i], e);
 		else 
 			printf("minishell: export: \'%s\': not a valid identifier\n", args[i]);
 		i++;

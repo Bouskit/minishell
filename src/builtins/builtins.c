@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 15:10:50 by bboukach          #+#    #+#             */
-/*   Updated: 2025/03/11 14:09:28 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/03/14 21:11:18 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void do_input(char *input, t_env *e, t_status *status)
 	else if (ft_strcmp(args[0], "echo") == 0)
 		builtins_echo(args);
 	else if (ft_strcmp(args[0], "export") == 0)
-		builtins_export(args, e);
+		builtins_export(args, &e);
 	else 
 		cmd_not_found(input);
 	free_doublechar(args);

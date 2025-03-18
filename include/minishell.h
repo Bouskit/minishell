@@ -21,12 +21,48 @@ typedef struct s_env
 	struct s_env *next;
 }t_env;
 
+typedef enum e_token_type//add builtin
+{
+	WORD,//0
+	PIPE,//1 |
+	R_IN,//2 <: Redirects a file’s content as input to a command. "cat < file.txt"
+	HEREDOC,//3 <<
+	R_OUT,//4 >: Overwrites the file with the command’s output."echo "Hello" > file.txt
+	APPEND,//5 >>: Appends the output to the file instead of overwriting.
+	QUOTE_SINGLE,//6
+	QUOTE_DOUBLE,//7
+	ERROR = -2
+}	t_token_type;
+
+typedef struct	s_token
+{
+	char			*value;
+	t_token_type	type;
+	struct s_token	*next;
+}	t_token;
+
+typedef struct s_out
+{
+	int				*append;      
+    char			**outfile;     
+} t_out;
+
+typedef struct	s_command
+{
+	char				**args;
+	char				*infile;
+	t_out				rout;
+	char				**heredoc;
+	int					index;
+	struct	s_command	*next;
+}	t_command;
+
 //-------------- BUILTINS ----------------
 
 void builtins_env(t_env *e);
 void builtins_pwd(t_env *e);
 void builtins_exit(char **args, t_status *status);
-void builtins_export(char **args, t_env *e);
+void builtins_export(char **args, t_env **e);
 void builtins_echo(char **args);
 
 
