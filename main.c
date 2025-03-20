@@ -6,11 +6,11 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 15:14:22 by bboukach          #+#    #+#             */
-/*   Updated: 2025/03/06 23:34:35 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/03/20 23:53:23 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "include/minishell.h"
 
 int main(int ac, char **av, char **envp)
 {

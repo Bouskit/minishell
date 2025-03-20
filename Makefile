@@ -2,15 +2,11 @@
 NAME = minishell
 
 # Fichiers sources
-SRCS = src/builtins/builtins.c \
-		src/builtins/echo.c \
-		src/builtins/env.c \
-		src/builtins/exit.c \
-		src/builtins/pwd.c \
-		src/builtins/export.c \
-		src/env.c \
-		src/main.c \
-		src/utils.c \
+SRCS = init.c \
+		env.c \
+		exec2.c \
+		path.c \
+		utils.c \
 
 # Compilateur
 CC = cc

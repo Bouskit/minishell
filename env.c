@@ -5,12 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/03 20:05:48 by bboukach          #+#    #+#             */
-/*   Updated: 2025/03/06 23:36:11 by bboukach         ###   ########.fr       */
+/*   Created: 2025/03/19 21:45:52 by bboukach          #+#    #+#             */
+/*   Updated: 2025/03/20 23:53:35 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "include/minishell.h"
 
 void free_env(t_env *env)
 {
@@ -74,6 +74,21 @@ void env_addback(t_env **env, t_env *new)
 		env_last(*env)->next = new;
 	else
 		*env = new;
+}
+
+int	env_size(t_env *lst)
+{
+	t_env	*tmp;
+	int		i;
+
+	tmp = lst;
+	i = 0;
+	while (tmp)
+	{
+		tmp = tmp->next;
+		i++;
+	}
+	return (i);
 }
 
 t_env *init_env(char **envp)

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/19 21:44:25 by bboukach          #+#    #+#             */
+/*   Updated: 2025/03/20 22:45:02 by bboukach         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 #define MINISHELL_H
 
@@ -6,40 +18,15 @@
 #include <unistd.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include "../libft_custom/libft.h"
-
-typedef struct s_status
-{
-	int exit_code;
-}t_status;
+#include "libft_custom/libft.h"
+#include <sys/wait.h>
 
 typedef struct s_env
 {
 	char *name;
 	char *value;
-	//struct *prev;
 	struct s_env *next;
 }t_env;
-
-typedef enum e_token_type//add builtin
-{
-	WORD,//0
-	PIPE,//1 |
-	R_IN,//2 <: Redirects a file’s content as input to a command. "cat < file.txt"
-	HEREDOC,//3 <<
-	R_OUT,//4 >: Overwrites the file with the command’s output."echo "Hello" > file.txt
-	APPEND,//5 >>: Appends the output to the file instead of overwriting.
-	QUOTE_SINGLE,//6
-	QUOTE_DOUBLE,//7
-	ERROR = -2
-}	t_token_type;
-
-typedef struct	s_token
-{
-	char			*value;
-	t_token_type	type;
-	struct s_token	*next;
-}	t_token;
 
 typedef struct s_out
 {
@@ -47,42 +34,51 @@ typedef struct s_out
     char			**outfile;     
 } t_out;
 
+typedef struct s_in
+{
+	int				*heredoc;
+	char			**infile;
+} t_in;
+
 typedef struct	s_command
 {
 	char				**args;
-	char				*infile;
 	t_out				rout;
-	char				**heredoc;
+	t_in				rin;
 	int					index;
 	struct	s_command	*next;
 }	t_command;
 
-//-------------- BUILTINS ----------------
+/////ENV/////
 
-void builtins_env(t_env *e);
-void builtins_pwd(t_env *e);
-void builtins_exit(char **args, t_status *status);
-void builtins_export(char **args, t_env **e);
-void builtins_echo(char **args);
-
-
-void do_input(char *input, t_env *e, t_status *status);
-
-//-------------- ENV ---------------------
-
-void free_doublechar(char **str);
 void free_env(t_env *env);
+void free_doublechar(char **str);
 t_env	*env_last(t_env *e);
 t_env	*env_new(char *name, char *value);
-void env_addback(t_env **env, t_env *new);
+void 	env_addback(t_env **env, t_env *new);
+int		env_size(t_env *lst);
 t_env *init_env(char **envp);
 
-//-------------- UTILS -------------------
-int	strcmp_space(char *s1, char *s2);
-int str_is_num(char *str);
-int	env_size(t_env *lst);
+//pipe
 
+void	close_all_pipes(int **pipes);
+char **env_to_envp(t_env *env);
+void	do_heredoc(int pipehd[2], char *limiter);
+void redir_out(t_out *rout);
+void	redir_in(t_in *rin);
+void	child_command(t_command *cmd, t_env *env);
+void	execute_pipe(t_command *cmd, t_env *env);
+void execute_one_command(t_command *cmd, t_env *env);
+void	execute(t_command *cmd, t_env *env);
 
+//path
+char *path_env(t_env *env);
+char	*add_at_the_end(char *path, char *cmd);
+char	**add_cmd_to_paths(char **paths, char *cmd);
+char *find_path(char *cmd, t_env *env);
 
+//utils
+
+int cmd_size(t_command *cmd);
 
 #endif
