@@ -2,12 +2,19 @@
 
 #include <stdio.h>
 
+void	print_token(t_token	*tokens)
+{
+	printf("\n🔹 tokens:\n");
+	while (tokens)
+    {
+        printf("Token: [%s] Type: [%d]\n", tokens->value, tokens->type);
+        tokens = tokens->next;
+    }
+}
 void print_commands(t_command *cmds)
 {
-    int i;
-    int out_i;
+	int in_i;
 
-    printf("\n🔹 Parsed Commands:\n");
     while (cmds)
     {
         printf("🔹 Command %d\n", cmds->index);
@@ -15,56 +22,67 @@ void print_commands(t_command *cmds)
         // Print arguments
         if (cmds->args)
         {
-            i = 0;
+            int i = 0;
             while (cmds->args[i])
             {
-                printf("  Arguments:%d \"%s\" ", i, cmds->args[i]);
+                printf("  Arguments%d: \"%s\" ", i, cmds->args[i]);
                 i++;
             }
+			printf("\n");
         }
-        printf("\n");
+        
 
-        // Print input redirection
-        if (cmds->infile)
-            printf("  Input File: \"%s\"\n", cmds->infile);
-
-		 // Print append flags
-		 if (cmds->rout.append)
-		 {
-			 printf("  Append Flags: ");
-			 for (int j = 0; j < out_i; j++)
-				 printf("%d ", cmds->rout.append[j]);
+        // Print input flags
+        if (cmds->in)
+		{
+			in_i = 0;
+			while (cmds->in[in_i] != -5)
+			{
+            	printf("  Input Flag %d: \"%d\" ", in_i, cmds->in[in_i]);
+				in_i++;
+			}
+			printf("\n");
+		}
+		// Print input file
+		if (cmds->infile)
+		{
+			int in_f = 0;
+			while (cmds->infile[in_f])
+			{
+				printf("  Input Files %d : \"%s\" ", in_f,cmds->infile[in_f]);
+				in_f++;
+			}
+			printf("\n");
+			printf("\n");
+		}
+		
+		// Print append flags
+		if (cmds->append)
+		{
+			int out_a = 0;
+			while (cmds->append[out_a] != -5)
+			{
+				printf ("  Append Flag %d : \"%d\" ", out_a,cmds->append[out_a]);
+				out_a++;
+			}
 			 printf("\n");
 		 }
         // Print output redirection
-        if (cmds->rout.outfile)
+        if (cmds->outfile)
         {
-            out_i = 0;
-            while (cmds->rout.outfile[out_i])
+            int out_o = 0;
+            while (cmds->outfile[out_o])
             {
-                printf("  Output Files %d : \"%s\" ", out_i,cmds->rout.outfile[out_i]);
-                out_i++;
+                printf("  Output Files %d : \"%s\" ", out_o, cmds->outfile[out_o]);
+                out_o++;
             }
             printf("\n");
         }
-
-        // Print heredocs
-        if (cmds->heredoc)
-        {
-            i = 0;
-            while (cmds->heredoc[i])
-            {
-                printf("  Heredoc Delimiters: %d\n\"%s\" ",i, cmds->heredoc[i]);
-                i++;
-            }
-            printf("\n");
-        }
-
         // Move to the next command
         cmds = cmds->next;
-        printf("\n");
     }
 }
+
 
 
 int	main(int argc, char **argv, char **envp)
@@ -92,13 +110,18 @@ int	main(int argc, char **argv, char **envp)
 		free (cmd_line);
 		if (!tokens)
 			continue;
-		check_syntax(tokens);
+		if (!check_syntax(tokens))
+		{
+			free_tokens(tokens);
+			continue;
+		}
 		cmds = parse_tokens(tokens);
 		if (!cmds)
 		{
 			free_tokens(tokens);
 			continue;
 		}
+		//print_token(tokens);
 		print_commands(cmds);
 		free_tokens(tokens);
 		free_cmd(cmds);

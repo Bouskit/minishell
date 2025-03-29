@@ -29,7 +29,7 @@ void free_env(t_env *env)
 	}
 }
 
-void	free_tokens(t_token *tokens)
+/*void	free_tokens(t_token *tokens)
 {
 	t_token	*tmp;
 	
@@ -43,6 +43,19 @@ void	free_tokens(t_token *tokens)
 			free (tmp->value);
 		free (tmp);
 	}
+}*/
+void free_tokens(t_token *tokens)
+{
+    t_token *tmp;
+
+    while (tokens)
+    {
+        tmp = tokens->next; // Save the next node before freeing
+        if (tokens->value)
+            free(tokens->value); // Free the value string
+        free(tokens);            // Free the current node
+        tokens = tmp;            // Move to the next node
+    }
 }
 
 void	free_cmd(t_command *cmds)
@@ -61,23 +74,23 @@ void	free_cmd(t_command *cmds)
 				free(tmp->args[i++]);
 			free (tmp->args);//free tmp->args lists
 		}
+		if (tmp->in)
+			free(tmp->in);
 		if (tmp->infile)
-			free (tmp->infile);// free infile pointer
-		if (tmp->rout.append)
-			free (tmp->rout.append);
-		if (tmp->rout.outfile)
 		{
 			i = 0;
-			while (tmp->rout.outfile[i])
-				free(tmp->rout.outfile[i++]);
-			free (tmp->rout.outfile);//free rout.outfile lists
+			while (tmp->infile[i])
+				free(tmp->infile[i++]);
+			free (tmp->infile);//free tmp->infile lists
 		}
-		if (tmp->heredoc)
+		if (tmp->append)
+			free (tmp->append);
+		if (tmp->outfile)
 		{
 			i = 0;
-			while (tmp->heredoc[i++])
-				free(tmp->heredoc[i]);
-			free (tmp->heredoc);//free heredoc lists
+			while (tmp->outfile[i])
+				free(tmp->outfile[i++]);
+			free (tmp->outfile);//free rout.outfile lists
 		}
 		free(tmp);
 	}

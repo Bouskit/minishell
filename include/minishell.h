@@ -50,18 +50,25 @@ typedef struct	s_token
 	struct s_token	*next;
 }	t_token;
 
-typedef struct s_out
+/*typedef struct s_in
+{
+	int				*heredoc;      
+    char			**infile;     
+} t_in;*/
+
+/*typedef struct s_out
 {
 	int				*append;      
     char			**outfile;     
-} t_out;
+} t_out;*/
 
 typedef struct	s_command
 {
 	char				**args;
+	int					*in;
 	char				**infile;
-	t_out				rout;
-	char				**heredoc;
+	int					*append;
+	char				**outfile;
 	int					index;
 	struct	s_command	*next;
 }	t_command;
@@ -98,8 +105,11 @@ t_token			*tokenization(char *cmd_line);
 
 //parsing
 int				check_syntax(t_token *tokens);
-t_command		*new_command();
+t_command		*new_command(int index);
 int				add_command(t_command **cmds, t_command *new);
+int add_cmd_args(t_command **cmds, t_token **token, int *ac);
+int	add_cmd_outfile(t_command **cmd, t_token **token, int *out_i);
+int	add_cmd_infile(t_command **cmd, t_token **token, int *in_i);
 t_command		*parse_tokens(t_token *tokens);
 
 //utils
