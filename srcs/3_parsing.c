@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "../include/minishell.h"
+// test
 
 int	check_syntax(t_token *token)
 {
