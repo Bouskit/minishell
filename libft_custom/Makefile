@@ -34,7 +34,8 @@ ADDITIONAL = base/ft_itoa.c \
 		base/ft_strtrim.c \
 		base/ft_substr.c \
 		base/ft_striteri.c \
-		base/ft_strcmp.c
+		base/ft_strcmp.c \
+		base/ft_strcat.c \
 
 BONUS = base/ft_lstadd_back_bonus.c \
 		base/ft_lstadd_front_bonus.c \

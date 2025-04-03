@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils0.c                                           :+:      :+:    :+:   */
+/*   utils000.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/06 21:24:15 by bboukach          #+#    #+#             */
-/*   Updated: 2025/03/20 23:53:53 by bboukach         ###   ########.fr       */
+/*   Created: 2025/03/31 19:07:55 by bboukach          #+#    #+#             */
+/*   Updated: 2025/04/02 17:34:25 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,18 +39,14 @@ int str_is_num(char *str)
 	return (1);
 }
 
-int	env_size(t_env *lst)
+void free_doublechar(char **str)
 {
-	t_env	*tmp;
-	int		i;
-
-	tmp = lst;
-	i = 0;
-	while (tmp)
+	int i = 0;
+	while (str[i])
 	{
-		tmp = tmp->next;
+		free(str[i]);
 		i++;
 	}
-	return (i);
+	free(str);
 }
 

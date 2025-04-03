@@ -1,12 +1,29 @@
 # Nom du projet
 NAME = minishell
 
-# Fichiers sources
-SRCS = init.c \
-		env.c \
-		exec2.c \
-		path.c \
-		utils.c \
+SRCS_DIR = srcs
+
+# List of source files
+SRCS = $(SRCS_DIR)/minishell_main.c \
+		$(SRCS_DIR)/1_env.c \
+		$(SRCS_DIR)/2_tokenization.c \
+		$(SRCS_DIR)/3_parsing.c \
+		$(SRCS_DIR)/utils.c \
+		$(SRCS_DIR)/free.c \
+		execution/path.c \
+		execution/exec.c \
+		execution/redirections.c \
+		execution/utils_exec.c \
+		utils000.c \
+		builtins/builtins.c \
+		builtins/echo.c \
+		builtins/env.c \
+		builtins/exit.c \
+		builtins/export.c \
+		builtins/pwd.c \
+		builtins/unset.c \
+		builtins/cd.c \
+		signal/signal.c \
 
 # Compilateur
 CC = cc

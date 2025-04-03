@@ -6,11 +6,11 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:22:06 by bboukach          #+#    #+#             */
-/*   Updated: 2025/03/14 21:10:34 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/03 00:41:07 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/minishell.h"
+#include "../include/minishell.h"
 
 void new_var(char *args, t_env **e)
 {
@@ -83,19 +83,28 @@ void export_print(t_env *e)
 	return ;
 }
 
-void export_sort(t_env **e)
+void export_sort(t_env *e)
 {
 	t_env *loop;
+	t_env *copy;
 	char *tmp;
 	int swap = 1;
 	int i;
-	int len = env_size(*e);
-
+	int len;
+	
+	loop = e;
+	copy = NULL;
+	while (loop)
+	{
+		env_addback(&copy, env_new(loop->name, loop->value));
+		loop = loop->next;
+	}
+	len = env_size(copy);
 	while (swap)
 	{
 		swap = 0;
 		i = 0;
-		loop = *e;
+		loop = copy;
 		while (i < len - 1)
 		{
 			if (loop->next && ft_strcmp(loop->name, loop->next->name) > 0)
@@ -115,14 +124,14 @@ void export_sort(t_env **e)
 		}
 		len--;
 	}
-	export_print(*e);
+	export_print(copy);
 }
 
-void builtins_export(char **args, t_env **e)
+int do_export(char **args, t_env **e)
 {
 	int i = 1;
 	if (!args[1])
-		export_sort(e);
+		export_sort(*e);
 	while (args[i])
 	{
 		if (args[i] && export_equal(args[i]))
@@ -131,5 +140,5 @@ void builtins_export(char **args, t_env **e)
 			printf("minishell: export: \'%s\': not a valid identifier\n", args[i]);
 		i++;
 	}
-	return;
+	return (0);
 }

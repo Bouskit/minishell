@@ -6,13 +6,13 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:19:57 by bboukach          #+#    #+#             */
-/*   Updated: 2025/03/14 21:14:01 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/03 00:40:06 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/minishell.h"
+#include "../include/minishell.h"
 
-void builtins_env(t_env *e)
+int do_env(t_env *e)
 {
 	t_env *tmp;
 
@@ -21,9 +21,7 @@ void builtins_env(t_env *e)
 	{
 		if (tmp->value)
 			printf("%s=%s\n", tmp->name, tmp->value);
-		else 
-			printf("%s=\n", tmp->name);
 		tmp = tmp->next;
 	}
-	return ;
+	return (0);
 }

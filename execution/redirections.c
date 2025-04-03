@@ -6,93 +6,78 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 23:15:25 by bboukach          #+#    #+#             */
-/*   Updated: 2025/03/20 23:52:27 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/02 22:30:34 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void redir_in(t_in *rin)
+void redir_in(t_command *cmd)
 {
 	int x = 0;
 	int fd = -1;
 	int pipehd[2];
 
-	if (rin->infile && rin->infile[0])
+	if (cmd->infile && cmd->infile[0])
 	{
-		while (rin->infile[x])
+		while (cmd->infile[x])
 		{
-			if (rin->heredoc[x])
+			if (cmd->in[x])
 			{
 				pipe(pipehd);
-				do_heredoc(pipehd, rin->infile[x]);
+				do_heredoc(pipehd, cmd->infile[x]);
 			}
 			else
 			{
 				if (fd != -1)
 					close (fd);
-				fd = open(rin->infile[x], O_RDONLY);
+				fd = open(cmd->infile[x], O_RDONLY);
 				if (fd < 0)
 				{
-					perror(rin->infile[x]);
+					perror(cmd->infile[x]);
 					return;
 				}
 			}
 			x++;
 		}
-		if (rin->heredoc[x - 1])
+		if (cmd->in[x - 1])
 		{
 			dup2(pipehd[0], STDIN_FILENO);
 			close(pipehd[0]);
 		}
 		else 
 			dup2(fd, STDIN_FILENO);
-		close(fd);
+		if (fd > 0)
+			close(fd);
 	}
 	return;
 }
 
-void redir_out(t_out *rout)
+void redir_out(t_command *cmd)
 {
 	int x = 0;
 	int fd = -1;
 
-	if (rout->outfile)
+	if (cmd->outfile && cmd->outfile[0])
 	{
-		while(rout->outfile[x])
+		while(cmd->outfile[x])
 		{
 			if (fd != -1)
 				close(fd);
-			if (rout->append[x])
-				fd = open(rout->outfile[x], O_WRONLY | O_CREAT | O_APPEND, 0644);
+			if (cmd->append[x])
+				fd = open(cmd->outfile[x], O_WRONLY | O_CREAT | O_APPEND, 0644);
 			else 
-				fd = open(rout->outfile[x], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+				fd = open(cmd->outfile[x], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 			if (fd < 0)
-			{
-				perror(rout->outfile[x]);
-				return;
-			}
+				perror(cmd->outfile[x]);
 			x++;
 		}
-		dup2(fd, STDOUT_FILENO);
+		if (dup2(fd, STDOUT_FILENO) == -1)
+			exit(EXIT_FAILURE);
 		close(fd);
 	}
 	return;
 }
-
-void child_command(t_command *cmd, t_env *env)
-{
-	char *path;
-	char **env_array = env_to_envp(env);
-
-	path = find_path(cmd->args[0], env);
-	
-	redir_in(&cmd->rin);
-	redir_out(&cmd->rout);
-	
-	execve(path, cmd->args, env_array);
-}
-
 
 void redir_pipes(int num_cmds, int i, int **pipes)
 {

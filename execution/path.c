@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 23:19:29 by bboukach          #+#    #+#             */
-/*   Updated: 2025/03/20 23:52:36 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/02 22:28:22 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,8 @@ char *find_path(char *cmd, t_env *env)
 	i = 0;
 	if(!cmd)
 		return (NULL);
-	fullpath = ft_split(path_env(env), ':');
+	if (!(fullpath = ft_split(path_env(env), ':')))
+		return NULL;
 	path_with_cmd = add_cmd_to_paths(fullpath, cmd);
 	while (path_with_cmd[i])
 	{

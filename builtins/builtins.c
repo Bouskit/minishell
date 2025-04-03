@@ -6,45 +6,38 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 15:10:50 by bboukach          #+#    #+#             */
-/*   Updated: 2025/03/14 21:11:18 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/03 00:37:44 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/minishell.h"
+#include "../include/minishell.h"
 
-/* 
-echo with option -n
-cd with only a relative or absolute path
-//    pwd with no options
-export with no options
-unset with no options
-//    env with no options or arguments
-//    exit with no options
-*/
-
-void cmd_not_found(char *input)
+int is_builtin(char *name)
 {
-	write(2, "minishell: ", 11);
-	write(2, input, ft_strlen(input));
-	write(2, ": command not found\n", 20);
+	if (!ft_strcmp("echo", name) || !ft_strcmp("cd", name) \
+	|| !ft_strcmp("pwd", name) || !ft_strcmp("export", name) \
+	|| !ft_strcmp("unset", name) || !ft_strcmp("env", name) \
+	|| !ft_strcmp("exit", name))
+		return (1);
+	else 
+		return (0); 
 }
 
-void do_input(char *input, t_env *e, t_status *status)
+int execute_builtin(t_command *cmd, t_env *env)
 {
-	char **args;
-
-	args = ft_split(input, ' ');
-	if (ft_strcmp(args[0], "pwd") == 0)
-		builtins_pwd(e);
-	else if (ft_strcmp(args[0], "env") == 0 && !args[1])
-		builtins_env(e);
-	else if (ft_strcmp(args[0], "exit") == 0)
-		builtins_exit(args, status);
-	else if (ft_strcmp(args[0], "echo") == 0)
-		builtins_echo(args);
-	else if (ft_strcmp(args[0], "export") == 0)
-		builtins_export(args, &e);
-	else 
-		cmd_not_found(input);
-	free_doublechar(args);
+	if (!ft_strcmp(cmd->args[0], "echo"))
+		return (do_echo(cmd->args));
+	else if (!ft_strcmp(cmd->args[0], "pwd"))
+		return (do_pwd());
+	else if (!ft_strcmp(cmd->args[0], "exit"))
+		return (do_exit(cmd->args));
+	else if (!ft_strcmp(cmd->args[0], "env") && !cmd->args[1])
+		return (do_env(env));	
+	else if (!ft_strcmp(cmd->args[0], "export"))
+		return (do_export(cmd->args, &env));
+	else if (!ft_strcmp(cmd->args[0], "unset"))
+		return (do_unset(cmd->args, &env));	
+	else if (!ft_strcmp(cmd->args[0], "cd"))
+		return (do_cd(cmd->args, &env));
+	return (1);
 }

@@ -6,36 +6,34 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:19:36 by bboukach          #+#    #+#             */
-/*   Updated: 2025/03/10 22:35:50 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/03 00:40:50 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/minishell.h"
+#include "../include/minishell.h"
 
-void builtins_exit(char **args, t_status *status)
+int do_exit(char **args)
 {
 	int exit_code;
 	
 	if (!args[1])
 	{
-		free_doublechar(args);
-		exit(status->exit_code);
+		//exit(status->exit_code);
+		exit(0);
 	}
 	if (!str_is_num(args[1]))
 	{
 		write(2, "exit\nminishell: exit: ", 22);
 		write(2, args[1], ft_strlen(args[1]));
 		write(2, ": numeric argument required\n", 28);
-		free_doublechar(args);
 		exit(2);
 	}
 	if (args[2])
 	{
 		ft_putstr_fd("exit\nminishell: exit: too many arguments\n", 2);
-		free_doublechar(args);
-		return ;
+		return (1);
 	}
 	exit_code = ft_atoi(args[1]) % 256;
-	free_doublechar(args);
 	exit(exit_code);
+	return (0);
 }

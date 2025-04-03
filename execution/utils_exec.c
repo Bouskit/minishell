@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 23:16:18 by bboukach          #+#    #+#             */
-/*   Updated: 2025/03/20 23:52:11 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/03 00:56:00 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,6 @@ int **create_pipes(int nb_cmd)
 	return(pipes);
 }
 
-
 void	do_heredoc(int pipehd[2], char *limiter)
 {
 	char *line;
@@ -78,10 +77,14 @@ void	do_heredoc(int pipehd[2], char *limiter)
 	limiter = ft_strjoin(limiter, "\n");
 	while (1)
 	{
-		write(open("/dev/tty", O_WRONLY), ">", 2);
+		write(open("/dev/tty", O_WRONLY), "> ", 2);
 		line = get_next_line(0);
 		if (!line || (ft_strcmp(line, limiter) == 0))
+		{
+			if (!line)
+				write(open("/dev/tty", O_WRONLY), "\n", 1);
 			break;
+		}
 		write(pipehd[1], line, ft_strlen(line));
 		free(line);
 	}

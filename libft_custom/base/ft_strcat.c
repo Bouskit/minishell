@@ -1,40 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_strcat.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/06 15:14:22 by bboukach          #+#    #+#             */
-/*   Updated: 2025/03/20 23:53:23 by bboukach         ###   ########.fr       */
+/*   Created: 2025/03/31 19:12:25 by bboukach          #+#    #+#             */
+/*   Updated: 2025/03/31 19:12:34 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "include/minishell.h"
+#include "libft.h"
 
-int main(int ac, char **av, char **envp)
+char	*ft_strcat(char *dest, const char *src)
 {
-	t_env *e;
-	t_status *status = malloc(sizeof(t_status));
-	char *input;
+	int	i;
+	int	j;
 
-	(void)ac;
-	(void)av;
-	
-	e = init_env(envp);
-	status->exit_code = 0;
-	
-	while (1)
+	if (!dest || !src)
+		return (NULL);
+	i = 0;
+	while (dest[i])
+		i++;
+	j = 0;
+	while (src[j])
 	{
-		if(!(input = readline("minishell$ ")))
-		{
-			printf("exit\n");
-			exit(0);
-		}
-		add_history(input);
-		do_input(input, e, status);
+		dest[i] = src[j];
+		i++;
+		j++;
 	}
-	free(status);
-	free_env(e);
-	return (0);
+	dest[i] = '\0';
+	return (dest);
 }
