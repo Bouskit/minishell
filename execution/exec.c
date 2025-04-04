@@ -6,15 +6,31 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 23:14:15 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/03 18:16:26 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/04 22:44:31 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
+void	close_unused_pipes(int **pipes, int num_cmds, int i)
+{
+    int j;
+    
+    j = 0;
+    while (j < num_cmds - 1)
+    {
+        if (j != i - 1)
+            close(pipes[j][0]);
+        if (j != i)
+            close(pipes[j][1]);
+        j++;
+    }
+}
+
 int	execute_pipe(t_command *cmd, t_env *env, int exit_code)
 {
 	pid_t	pid;
+	pid_t	current_pid;
 	int		status;
 	int		**pipes;
 	int		i;
@@ -30,6 +46,7 @@ int	execute_pipe(t_command *cmd, t_env *env, int exit_code)
 		if (pid == 0)
 		{
 			redir_pipes(num_cmds, i, pipes);
+			close_unused_pipes(pipes, num_cmds, i);
 			child_command(cmd, env);
 		}
 		if (i > 0)
@@ -43,13 +60,16 @@ int	execute_pipe(t_command *cmd, t_env *env, int exit_code)
 	close_all_pipes(pipes);
 	while (i < num_cmds)
 	{
-		waitpid(-1, &status, 0);
+		current_pid = waitpid(-1, &status, 0);
+		if (current_pid == pid)
+		{
+			if (WIFEXITED(status))
+        		exit_code = WEXITSTATUS(status);
+			else if (WIFSIGNALED(status))
+        		exit_code = 128 + WTERMSIG(status);
+		}
 		i++;
 	}
-    if (WIFEXITED(status))
-        exit_code = WEXITSTATUS(status);
-    else if (WIFSIGNALED(status))
-        exit_code = 128 + WTERMSIG(status);
     return (exit_code);
 }
 
@@ -58,27 +78,38 @@ void	child_command(t_command *cmd, t_env *env)
 	char	*path;
 	char	**env_array;
 
+	if (cmd->args[0] && (ft_strcmp(cmd->args[0], "./minishell") == 0 || 
+		ft_strcmp(cmd->args[0], "minishell") == 0))
+		increment_shlvl(&env);
 	env_array = env_to_envp(env);
 	redir_in(cmd);
 	redir_out(cmd);
 	if (is_builtin(cmd->args[0]))
 	{
-		execute_builtin(cmd, env);
 		free_doublechar(env_array);
-		exit(0);
+		exit(execute_builtin(cmd, env));
 	}
-	else
+	if (access(cmd->args[0], F_OK) == 0)
+    {
+        if (access(cmd->args[0], X_OK) == 0)
+            path = ft_strdup(cmd->args[0]);
+        else
+        {
+            ft_putstr3("minishell: ", cmd->args[0], ": Permission denied\n", 2);
+            free_doublechar(env_array);
+            exit(126);
+        }
+    }
+	else if (!(path = find_path(cmd->args[0], env)))
 	{
-		if (!(path = find_path(cmd->args[0], env)))
-		{
-			printf("minishell: %s: No such file or directory\n", cmd->args[0]);
-			free_doublechar(env_array);
-			exit(127);
-		}
-		execve(path, cmd->args, env_array);
+		ft_putstr3("minishell: ", cmd->args[0], ": command not found\n", 2);
 		free_doublechar(env_array);
 		exit(127);
 	}
+	execve(path, cmd->args, env_array);
+	perror("minishell:");
+	free_doublechar(env_array);
+	exit(127);
 }
 
 int    execute_one_builtin(t_command *cmd, t_env *env, int exit_code)
@@ -110,12 +141,26 @@ int	execute_one_command(t_command *cmd, t_env *env, int exit_code)
 	pid = fork();
 	if (pid == 0)
 	{
+		if (cmd->args[0] && (ft_strcmp(cmd->args[0], "./minishell") == 0 || 
+		ft_strcmp(cmd->args[0], "minishell") == 0))
+			increment_shlvl(&env);
 		env_array = env_to_envp(env);
 		redir_in(cmd);
 		redir_out(cmd);
-		if (!(path = find_path(cmd->args[0], env)))
+        if (access(cmd->args[0], F_OK) == 0)
+        {
+			if (access(cmd->args[0], X_OK) == 0)    
+				path = ft_strdup(cmd->args[0]);
+        	else
+        	{
+            	ft_putstr3("minishell: ", cmd->args[0], ": Permission denied\n", 2);
+            	free_doublechar(env_array);
+            	exit(126);
+        	}
+		}
+		else if (!(path = find_path(cmd->args[0], env)))
 		{
-			printf("minishell: %s: No such file or directory\n", cmd->args[0]);
+			ft_putstr3("minishell: ", cmd->args[0], ": command not found\n", 2);
 			free_doublechar(env_array);
 			exit(127);
 		}
@@ -136,11 +181,11 @@ int	execute(t_command *cmd, t_env *env)
     int exit_code;
     
     exit_code = 0;
-	setup_exec_signals();
+	g_interactive = 1;
 	if (cmd_size(cmd) > 1)
 		exit_code = execute_pipe(cmd, env, exit_code);
 	else
 		exit_code = execute_one_command(cmd, env, exit_code);
-	setup_interactive_signals();
+	g_interactive = 0;
     return (exit_code);
 }

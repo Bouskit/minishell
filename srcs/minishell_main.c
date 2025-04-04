@@ -2,43 +2,44 @@
 
 #include <stdio.h>
 
+
 void	print_token(t_token	*tokens)
 {
 	printf("\n🔹 tokens:\n");
 	while (tokens)
     {
-        printf("Token: [%s] Type: [%d]\n", tokens->value, tokens->type);
+		printf("Token: [%s] Type: [%d]\n", tokens->value, tokens->type);
         tokens = tokens->next;
     }
 }
 void print_commands(t_command *cmds)
 {
 	int in_i;
-
+	
     while (cmds)
     {
-        printf("🔹 Command %d\n", cmds->index);
-
+		printf("🔹 Command %d\n", cmds->index);
+		
         // Print arguments
         if (cmds->args)
         {
-            int i = 0;
+			int i = 0;
             while (cmds->args[i])
             {
-                printf("  Arguments%d: \"%s\" ", i, cmds->args[i]);
+				printf("  Arguments%d: \"%s\" ", i, cmds->args[i]);
                 i++;
             }
 			printf("\n");
         }
         
-
+		
         // Print input flags
         if (cmds->in)
 		{
 			in_i = 0;
 			while (cmds->in[in_i] != -5)
 			{
-            	printf("  Input Flag %d: \"%d\" ", in_i, cmds->in[in_i]);
+				printf("  Input Flag %d: \"%d\" ", in_i, cmds->in[in_i]);
 				in_i++;
 			}
 			printf("\n");
@@ -65,15 +66,15 @@ void print_commands(t_command *cmds)
 				printf ("  Append Flag %d : \"%d\" ", out_a,cmds->append[out_a]);
 				out_a++;
 			}
-			 printf("\n");
-		 }
+			printf("\n");
+		}
         // Print output redirection
         if (cmds->outfile)
         {
-            int out_o = 0;
+			int out_o = 0;
             while (cmds->outfile[out_o])
             {
-                printf("  Output Files %d : \"%s\" ", out_o, cmds->outfile[out_o]);
+				printf("  Output Files %d : \"%s\" ", out_o, cmds->outfile[out_o]);
                 out_o++;
             }
             printf("\n");
@@ -84,6 +85,7 @@ void print_commands(t_command *cmds)
 }
 
 
+int g_interactive = 0;
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -94,8 +96,8 @@ int	main(int argc, char **argv, char **envp)
 	t_token	*tokens; 
 	t_command	*cmds;
 	int exit_code;
-
-	setup_exec_signals();
+	
+	handle_sig();
 	exit_code = 0;
 	env = init_env(envp);
     if (!env)
@@ -107,12 +109,15 @@ int	main(int argc, char **argv, char **envp)
 	{
 		cmd_line = readline ("$minishell ");
 		if (!cmd_line)
+		{
+			printf("exit\n");
 			break ;
+		}
 		add_history(cmd_line);
 		tokens = tokenization (cmd_line);
 		free (cmd_line);
 		if (!tokens)
-			continue;
+		continue;
 		if (!check_syntax(tokens))
 		{
 			free_tokens(tokens);
@@ -144,7 +149,7 @@ int	main(int argc, char **argv, char **envp)
 	t_env	*env;
 	char	*cmd_line;
 	t_token	*tokens; 
-
+	
 	env = init_env(envp);
     if (!env)
 	{

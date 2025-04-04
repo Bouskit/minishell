@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 13:52:34 by xiazhang          #+#    #+#             */
-/*   Updated: 2025/04/02 17:31:06 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/04 20:03:01 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,6 +170,34 @@ int	env_size(t_env *lst)
 		i++;
 	}
 	return (i);
+}
+
+void increment_shlvl(t_env **env)
+{
+    t_env *tmp;
+    int level;
+    int found;
+
+    tmp = *env;
+    found = 0;
+	level = 0;
+    while (tmp)
+    {
+        if (!ft_strcmp("SHLVL", tmp->name))
+        {
+            found = 1;
+            if (tmp->value)
+            {
+                level = ft_atoi(tmp->value);
+                free(tmp->value);
+            }
+            level++;
+            tmp->value = ft_itoa(level);
+        }
+        tmp = tmp->next;
+    }
+    if (!found)
+            env_addback(env, env_new(ft_strdup("SHLVL"), ft_strdup("1")));
 }
 
 t_env *init_env(char **envp)

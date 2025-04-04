@@ -6,45 +6,27 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 17:53:30 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/03 18:15:39 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/04 17:10:33 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-volatile sig_atomic_t g_in_execution = 0;
-
-void sig_handler_interactive(int signo)
+void sigf(int signal)
 {
-    if (signo == SIGINT) 
+    if (signal == SIGINT)
     {
-        write(STDOUT_FILENO, "\n", 1);
+        printf("\n");
         rl_replace_line("", 0);
         rl_on_new_line();
-        rl_redisplay();
+        if (g_interactive == 0)
+            rl_redisplay();
     }
 }
 
-void sig_handler_exec(int signo)
-{
-    // Dans ce mode, on laisse simplement le signal être propagé aux enfants
-    if (signo == SIGINT)
-        write(STDOUT_FILENO, "\n", 1);
-}
-
-// À appeler avant d'entrer en mode interactif (prompt)
-void setup_interactive_signals(void)
-{
-    g_in_execution = 0;
-    signal(SIGINT, sig_handler_interactive);
-    signal(SIGQUIT, SIG_IGN);  // Ignore Ctrl-
-}
-
-// À appeler avant d'exécuter une commande
-void setup_exec_signals(void)
-{
-    g_in_execution = 1;
-    signal(SIGINT, sig_handler_exec);
+void handle_sig(void)
+{   
+    signal(SIGINT, &sigf);
     signal(SIGQUIT, SIG_IGN);  
 }
 	

@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 19:07:55 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/02 17:34:25 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/04 22:34:24 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,5 +48,15 @@ void free_doublechar(char **str)
 		i++;
 	}
 	free(str);
+}
+
+void ft_putstr3(char *a1, char *a2, char *a3, int fd)
+{
+	if (a1)
+		ft_putstr_fd(a1, fd);
+	if (a2)
+		ft_putstr_fd(a2, fd);
+	if (a3)
+		ft_putstr_fd(a3, fd);
 }
 

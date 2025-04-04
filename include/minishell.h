@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 13:55:40 by xiazhang          #+#    #+#             */
-/*   Updated: 2025/04/03 18:16:57 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/04 22:31:58 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <signal.h>
+
+extern int g_interactive;
 
 typedef struct s_status
 {
@@ -197,17 +199,17 @@ int do_unset(char **args, t_env **e);
 int	strcmp_space(char *s1, char *s2);
 int str_is_num(char *str);
 void free_doublechar(char **str);
+void ft_putstr3(char *a1, char *a2, char *a3, int fd);
 
 t_env	*env_last(t_env *e);
 t_env	*env_new(char *name, char *value);
 void env_addback(t_env **env, t_env *new);
 int	env_size(t_env *lst);
+void increment_shlvl (t_env **env);
 t_env *init_env(char **envp);
 
 //sig
-void sig_handler_interactive(int signo);
-void sig_handler_exec(int signo);
-void setup_interactive_signals(void);
-void setup_exec_signals(void);
+void sigf(int signal);
+void handle_sig(void);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 23:15:25 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/02 22:30:34 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/04 17:21:53 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void redir_in(t_command *cmd)
 				if (fd < 0)
 				{
 					perror(cmd->infile[x]);
-					return;
+					exit(1);
 				}
 			}
 			x++;
