@@ -29,7 +29,7 @@ void free_env(t_env *env)
 	}
 }
 
-/*void	free_tokens(t_token *tokens)
+void	free_tokens(t_token *tokens)
 {
 	t_token	*tmp;
 	
@@ -43,19 +43,6 @@ void free_env(t_env *env)
 			free (tmp->value);
 		free (tmp);
 	}
-}*/
-void free_tokens(t_token *tokens)
-{
-    t_token *tmp;
-
-    while (tokens)
-    {
-        tmp = tokens->next; // Save the next node before freeing
-        if (tokens->value)
-            free(tokens->value); // Free the value string
-        free(tokens);            // Free the current node
-        tokens = tmp;            // Move to the next node
-    }
 }
 
 void	free_cmd(t_command *cmds)

@@ -26,7 +26,6 @@ typedef struct s_env
 {
 	char	*name;
 	char	*value;
-	//struct s_env	*prev;
 	struct s_env	*next;		
 }	t_env;
 
@@ -38,9 +37,11 @@ typedef enum e_token_type//add builtin
 	HEREDOC,//3 <<
 	R_OUT,//4 >: Overwrites the file with the command’s output."echo "Hello" > file.txt
 	APPEND,//5 >>: Appends the output to the file instead of overwriting.
-	QUOTE_SINGLE,//6
-	QUOTE_DOUBLE,//7
-	ERROR = -2
+	SINGLE_QUOTES,//6
+	DOUBLE_QUOTES,//7
+	EXIT_STATUS,//8
+	VAR,//9
+	ERROR
 }	t_token_type;
 
 typedef struct	s_token
@@ -70,6 +71,7 @@ typedef struct	s_command
 	int					*append;
 	char				**outfile;
 	int					index;
+	int					exit_code;
 	struct	s_command	*next;
 }	t_command;
 
@@ -88,12 +90,12 @@ void print_commands(t_command *cmds);
 int	main(int ac, char **av, char **env);
 
 //set up the environment
-t_env	*env_new_ele(char *env);
-int		add_env(t_env **env, t_env *new);
-t_env	*init_env(char **envp);
-t_env	*init_default_env();
-void	free_env(t_env *env);
-void	print_env(t_env *env);//------------test helper function
+t_env			*env_new_ele(char *env);
+int				add_env(t_env **env, t_env *new);
+t_env			*init_env(char **envp);
+t_env			*init_default_env();
+void			free_env(t_env *env);
+void			print_env(t_env *env);//------------test helper function
 
 //tokenization
 t_token			*new_token(char *value, t_token_type type);
@@ -101,27 +103,44 @@ int				add_token(t_token **tokens, t_token *new);
 t_token_type	operator_type(char	*str);
 int				ft_is_space(char c);
 int				is_operator(char c);
+char			*extract_word(char *cmd_line, int *i);
+int				unclosed_quote(char	*cmd_line);
 t_token			*tokenization(char *cmd_line);
 
+
+// expand variables
+int				isquote(char *s);
+int				isdollar(char *s);
+int				dollar_in_normal(char *s);
+int				dollar_in_dq(char *s);
+char			*extract_quoted_string(char *cmd_line, int *i, char half_quote);
+void			*handle_no_expansion_quotes(t_token **token);
+t_token			*split_token(t_token **token);
+t_token			*split_var(t_token **var);
+t_token			*replace_var(t_token *var_name, t_env *env);
+t_token			*expand_tokens(t_token *token, t_env *env);
+
+
 //parsing
+int				empty_line(char *cmd_line);
 int				check_syntax(t_token *tokens);
 t_command		*new_command(int index);
 int				add_command(t_command **cmds, t_command *new);
-int add_cmd_args(t_command **cmds, t_token **token, int *ac);
-int	add_cmd_outfile(t_command **cmd, t_token **token, int *out_i);
-int	add_cmd_infile(t_command **cmd, t_token **token, int *in_i);
+int				add_cmd_args(t_command **cmds, t_token **token, int *ac);
+int				add_cmd_outfile(t_command **cmd, t_token **token, int *out_i);
+int				add_cmd_infile(t_command **cmd, t_token **token, int *in_i);
 t_command		*parse_tokens(t_token *tokens);
 
 //utils
-void 	*ft_realloc(void *ptr, size_t new_size);
-char 	*ft_strndup(const char *s, size_t n);
-size_t	ft_strlen(const char *s);
-char	*ft_strdup(const char *s);
+void 			*ft_realloc(void *ptr, size_t new_size);
+char 			*ft_strndup(const char *s, size_t n);
+size_t			ft_strlen(const char *s);
+char			*ft_strdup(const char *s);
 
 //free all kinds
-void	free_env(t_env *env);
-void	free_tokens(t_token *tokens);
-void	free_cmd(t_command *cmds);
+void			free_env(t_env *env);
+void			free_tokens(t_token *tokens);
+void			free_cmd(t_command *cmds);
 
 
 #endif

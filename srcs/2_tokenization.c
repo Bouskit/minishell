@@ -30,11 +30,6 @@ t_token	*new_token(char *value, t_token_type type)
 		return (NULL);
 	}
 	new->type = type;
-	if (new->type == ERROR)
-	{
-		free_tokens(new);
-		return (NULL);
-	}
 	return (new);
 }
 
@@ -83,41 +78,74 @@ int	is_operator(char c)
 {
 	return (c == '|' || c == '>' || c == '<');
 }
-static char	*extract_quoted_string(char *cmd_line, int *i, char half_quote)
-{
-	int		start;
-	char	*result;
-	int		len;
 
-	start = ++(*i);
-	len = 0;
-	while (cmd_line[*i] && cmd_line[*i] != half_quote)
+
+char	*extract_word(char *cmd_line, int *i) // 
+{
+	int	start;
+	char	half_quote;
+	int	quote;
+
+	quote = 0;
+	start = *i;
+	while(cmd_line[*i] && cmd_line[*i] != ' ' && cmd_line[*i] != '\n' && cmd_line[*i] != '\t' && cmd_line[*i] != '\v' && cmd_line[*i] != '\r' && cmd_line[*i] != '\f')
 	{
-		(*i)++;
-		len++;
+		if (cmd_line[*i] == '\'' || cmd_line[*i] == '"')
+		{
+			half_quote = cmd_line[*i];
+			quote = 1;
+			(*i)++;
+			while (cmd_line[*i] != half_quote)
+				(*i)++;
+			quote = 0;
+			if (cmd_line[*i + 1] == '\0' || cmd_line[*i + 1] == ' ' || cmd_line[*i + 1] == '\n' || cmd_line[*i + 1] == '\r' || cmd_line[*i + 1] == '\f' || cmd_line[*i + 1] == '\t'  || cmd_line[*i + 1] == '\v')
+			{
+					(*i)++;
+					return (ft_strndup(&cmd_line[start], *i - start));
+			}
+			else
+				(*i)++;
+		}
+		else
+			(*i)++;
 	}
-	if (cmd_line[*i] != half_quote)
-	{
-		ft_putstr_fd("Error: unclosed quote\n", 2);
-		return (NULL);
-	}
-	result = ft_substr(cmd_line, start, len);
-	if (!result)
-	{	
-		ft_putstr_fd("Error: Failed to malloc\n", 2);
-		return (NULL);
-	}
-	return (result);
+	return (ft_strndup(&cmd_line[start], *i - start));	
 }
+
+int	unclosed_quote(char	*cmd_line)
+{
+	int	i;
+	char	half_quote;
+
+	i = 0;
+	while (cmd_line[i] )
+	{
+		if (cmd_line[i] == '\'' || cmd_line[i] == '"')
+		{
+			half_quote = cmd_line[i];
+			i++;
+			while (cmd_line[i] && cmd_line[i] != half_quote)
+				i++;
+			if (cmd_line[i] != half_quote)
+				return (1);
+		}
+		i++;
+	}
+	return (0);
+}
+
 t_token	*tokenization(char *cmd_line)
 {
 	t_token	*tokens;
 	int		i;
 	char	op[3] = {0};
-	int		start;
-	char	*word;
-	char	*quoted_str;
 
+	char	*word;
+	if(unclosed_quote(cmd_line))
+	{
+		ft_putstr_fd("Error: unclosed quote\n", 2);
+		return (NULL);//check more carefully later the return value
+	}
 	tokens =  NULL;
 	i = 0;
 	while (cmd_line[i])
@@ -147,44 +175,9 @@ t_token	*tokenization(char *cmd_line)
 			}
 			continue;
 		}
-		if (cmd_line[i] == '\'' || cmd_line[i] == '"')
-		{
-			char current_quote;
-			current_quote = cmd_line[i];
-			quoted_str = extract_quoted_string(cmd_line, &i, current_quote);
-			if (!quoted_str)
-			{
-				free_tokens(tokens);
-				return (0);
-			}
-			if (current_quote == '\'')
-			{
-				if(!add_token(&tokens, new_token(quoted_str, QUOTE_SINGLE)))
-				{
-					free_tokens(tokens);
-					return (NULL);
-				}
-			}
-			if (current_quote == '"')
-			{	
-				if(!add_token(&tokens, new_token(quoted_str, QUOTE_DOUBLE)))
-				{
-					free_tokens(tokens);
-					return (NULL);
-				}
-			}
-			free (quoted_str);
-			i++;
-			continue;
-		}
 		else
 		{
-			start = i;
-			while (cmd_line[i] && !isspace(cmd_line[i]) && !is_operator(cmd_line[i]))
-			{
-				i++;
-			}
-			word = ft_strndup(&cmd_line[start], i - start);
+			word = extract_word(cmd_line, &i);
 			if (!add_token(&tokens, new_token(word, WORD)))
 			{
 				free_tokens(tokens);
@@ -196,4 +189,5 @@ t_token	*tokenization(char *cmd_line)
 	}
 	return (tokens);
 }
+
 

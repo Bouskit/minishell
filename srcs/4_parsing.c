@@ -10,7 +10,21 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "../include/minishell.h"
-// test
+
+int	empty_line(char *cmd_line)
+{
+	int	i;
+
+	i = 0;
+	while (cmd_line[i] && ft_is_space(cmd_line[i]))
+		i++;
+	if (i == (int)ft_strlen(cmd_line))
+	{
+		free(cmd_line);
+		return (1);
+	}
+	return (0);
+}
 
 int	check_syntax(t_token *token)
 {
@@ -130,16 +144,13 @@ t_command	*parse_tokens(t_token *tokens)
 	out_i = 0;
 	in_i = 0;
 	cmd_count = 0;
-	
-
 	cmd = new_command(cmd_count++);
 	if (!cmd)
 		return (NULL);
 	first_cmd = cmd;
-	
 	while (tokens)
 	{
-		if(tokens->type == WORD || tokens->type == QUOTE_DOUBLE || tokens->type == QUOTE_SINGLE)
+		if(tokens->type == WORD)
 		{
 			if (!add_cmd_args(&cmd, &tokens, &ac))
 			{
@@ -165,8 +176,7 @@ t_command	*parse_tokens(t_token *tokens)
 				printf("Error: Failed to add command outfile\n");
 				return (NULL);
 			}
-		}
-		
+		}	
 		else if(tokens->type == PIPE)
 		{
 			cmd = new_command(cmd_count++);

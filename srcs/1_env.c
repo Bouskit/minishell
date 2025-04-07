@@ -55,17 +55,8 @@ int	add_env(t_env **env, t_env *new)
 	{
 		tmp = *env;
 		while (tmp->next)
-		{
 			tmp = tmp->next;
-			//printf ("add_env\n");
-		}
 		tmp->next = new;
-
-		/*tail = (*env)->prev;
-		tail->next = new;
-		new->prev = tail;
-		new->next = *env;
-		(*env)->prev = new;*/
 	}
 	return (1);
 }

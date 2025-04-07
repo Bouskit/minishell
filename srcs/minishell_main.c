@@ -85,7 +85,7 @@ void print_commands(t_command *cmds)
 
 
 
-int	main(int argc, char **argv, char **envp)
+/*int	main(int argc, char **argv, char **envp)
 {
 	(void)argc;
 	(void)argv;
@@ -93,6 +93,7 @@ int	main(int argc, char **argv, char **envp)
 	char	*cmd_line;
 	t_token	*tokens; 
 	t_command	*cmds;
+	t_token		*expanded;
 
 	env = init_env(envp);
     if (!env)
@@ -104,7 +105,9 @@ int	main(int argc, char **argv, char **envp)
 	{
 		cmd_line = readline ("$minishell ");
 		if (!cmd_line)
-			break ;
+			continue ;
+		if (empty_line(cmd_line))
+			continue ;
 		add_history(cmd_line);
 		tokens = tokenization (cmd_line);
 		free (cmd_line);
@@ -115,21 +118,50 @@ int	main(int argc, char **argv, char **envp)
 			free_tokens(tokens);
 			continue;
 		}
-		cmds = parse_tokens(tokens);
+		expanded = expand_tokens(tokens, env);
+		if(!expanded)
+		{
+			free_tokens(tokens);
+			continue;
+		}
+		
+		cmds = parse_tokens(expanded);
 		if (!cmds)
 		{
 			free_tokens(tokens);
 			continue;
 		}
-		//print_token(tokens);
-		print_commands(cmds);
+		print_token(tokens);
+		print_token(expanded);
 		free_tokens(tokens);
-		free_cmd(cmds);
+		free_tokens(expanded);
+		//print_commands(cmds);
+		
+		
+		//free_cmd(cmds);
 	}
 	free_env(env);
 	return (0);
-}
+}*/
 
+int	main(int argc, char **argv, char **envp)//1- d$a$b; 2- '$f k'; 3-"'$USER'"; 4-'"$HOME"'
+{
+	(void)argc;
+	(void)argv;
+	t_env	*env;
+
+	env = init_env(envp);
+	
+	t_token	*t = new_token("a$bc\'d$F g\'h\"a$ij k\"", WORD);
+	
+	t_token *r = split_token(&t);
+	//t_token *s = replace_var(t, env);
+	print_token(r);
+	//free_tokens(r);
+	free_tokens(r);
+	free_env(env);
+	return (0);
+}
 
 
 //----------------------------------test 1&2
@@ -157,6 +189,7 @@ int	main(int argc, char **argv, char **envp)
 		if (!tokens)
 			continue;
 		free (cmd_line);
+		expand_tokens(tokens, env);
 		while (tokens)
 		{
 			printf("Token: [%s] Type: [%d]\n", tokens->value, tokens->type);
@@ -168,6 +201,7 @@ int	main(int argc, char **argv, char **envp)
 	free_env(env);
 	return (0);
 }*/
+
 
 //---------------------------------1_env test
 
@@ -185,7 +219,7 @@ int	main(int argc, char **argv, char **envp)
             fprintf(stderr, "Error: NULL environment variable detected\n");
             return;
         }
-        printf("%s=", tmp->name);
+        printf("%s\n", tmp->name);
         printf("%s\n", tmp->value);
         tmp = tmp->next;
     } while (tmp != env && tmp);  // Ensure tmp is not NULL
