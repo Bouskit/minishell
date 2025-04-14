@@ -6,18 +6,18 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:19:57 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/03 00:40:06 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/15 01:19:32 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-int do_env(t_env *e)
+int	do_env(t_env *e)
 {
 	t_env *tmp;
 
 	tmp = e;
-	while(tmp)
+	while (tmp)
 	{
 		if (tmp->value)
 			printf("%s=%s\n", tmp->name, tmp->value);

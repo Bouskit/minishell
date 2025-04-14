@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 20:38:30 by xiazhang          #+#    #+#             */
-/*   Updated: 2025/04/13 13:27:10 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/15 00:37:19 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,23 +89,65 @@ int	add_command(t_command **cmds, t_command *new)
 
 int add_cmd_args(t_command **cmds, t_token **token, int *ac)
 {
-	(*cmds)->args = realloc((*cmds)->args, sizeof(char *) * (*ac + 2));
-	if (!(*cmds)->args)
-		return (0);
-	(*cmds)->args[*ac] = ft_strdup((*token)->value);
-	if (!(*cmds)->args[*ac])
-		return (0);
-	(*cmds)->args[++(*ac)] = NULL;
-	return (1);
+    size_t  old_size;
+
+    old_size = 0;
+    if (*ac > 0)
+        old_size = sizeof(char *) * (*ac + 1);
+    (*cmds)->args = ft_realloc((*cmds)->args, old_size, sizeof(char *) * (*ac + 2));
+    if (!(*cmds)->args)
+        return (0);
+    (*cmds)->args[*ac] = ft_strdup((*token)->value);
+    if (!(*cmds)->args[*ac])
+        return (0);
+    (*cmds)->args[++(*ac)] = NULL;
+    return (1);
+}
+
+int add_cmd_infile(t_command **cmd, t_token **token, int *in_i)
+{
+    size_t  old_in_size;
+
+    old_in_size = 0;
+    if (*in_i > 0)
+        old_in_size = sizeof(int) * (*in_i + 1);
+    (*cmd)->in = ft_realloc((*cmd)->in, old_in_size, sizeof(int) * (*in_i + 2));
+    if (!(*cmd)->in)
+        return (0);
+    (*cmd)->in[*in_i] = ((*token)->type == HEREDOC);
+    *token = (*token)->next;
+    old_in_size = 0;
+    if (*in_i > 0)
+        old_in_size = sizeof(char *) * (*in_i + 1);
+    (*cmd)->infile = ft_realloc((*cmd)->infile, old_in_size, sizeof(char *) * (*in_i + 2));
+    if (!(*cmd)->infile)
+        return (0);
+    (*cmd)->infile[*in_i] = ft_strdup((*token)->value);
+    if (!(*cmd)->infile[*in_i])
+        return (0);
+    (*cmd)->infile[++(*in_i)] = NULL;
+    (*cmd)->in[*in_i] = -5;
+    return (1);
 }
 int	add_cmd_outfile(t_command **cmd, t_token **token, int *out_i)
 {
-	(*cmd)->append = realloc((*cmd)->append, sizeof(int) * (*out_i + 2));
+	size_t	old_append_size;
+	size_t	old_outfile_size;
+
+	old_append_size = 0;
+	if (*out_i > 0)
+		old_append_size = sizeof(int) * (*out_i + 1);
+	(*cmd)->append = ft_realloc((*cmd)->append, old_append_size, 
+		sizeof(int) * (*out_i + 2));
 	if (!(*cmd)->append)
 		return (0);
 	(*cmd)->append[*out_i] = ((*token)->type == APPEND);
 	*token = (*token)->next;
-	(*cmd)->outfile = realloc((*cmd)->outfile, sizeof(char *) * (*out_i + 2));
+	old_outfile_size = 0;
+	if (*out_i > 0)
+		old_outfile_size = sizeof(char *) * (*out_i + 1);
+	(*cmd)->outfile = ft_realloc((*cmd)->outfile, old_outfile_size, 
+		sizeof(char *) * (*out_i + 2));
 	if (!(*cmd)->outfile)
 		return (0);
 	(*cmd)->outfile[*out_i] = ft_strdup((*token)->value);
@@ -115,23 +157,7 @@ int	add_cmd_outfile(t_command **cmd, t_token **token, int *out_i)
 	(*cmd)->append[*out_i] = -5;
 	return (1);
 }
-int	add_cmd_infile(t_command **cmd, t_token **token, int *in_i)
-{
-	(*cmd)->in = realloc((*cmd)->in, sizeof(int) * (*in_i + 2));
-	if (!(*cmd)->in)
-		return (0);
-	(*cmd)->in[*in_i] = ((*token)->type == HEREDOC);
-	*token = (*token)->next;
-	(*cmd)->infile = realloc((*cmd)->infile, sizeof(char *) * (*in_i + 2));
-	if (!(*cmd)->infile)
-		return (0);
-	(*cmd)->infile[*in_i] = ft_strdup((*token)->value);
-	if (!(*cmd)->infile[*in_i])
-		return (0);
-	(*cmd)->infile[++(*in_i)] = NULL;
-	(*cmd)->in[(*in_i)] = -5;
-	return (1);
-}
+
 t_command	*parse_tokens(t_token *tokens)
 {
 	t_command	*cmd;

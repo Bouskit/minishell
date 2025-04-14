@@ -6,13 +6,13 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:19:50 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/03 00:41:21 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/15 01:20:02 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-int do_pwd(void)
+int	do_pwd(void)
 {
 	char pwd[256];
 

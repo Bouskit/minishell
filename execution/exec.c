@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 23:14:15 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/04 22:44:31 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/15 01:05:49 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,8 @@ void	child_command(t_command *cmd, t_env *env)
         else
         {
             ft_putstr3("minishell: ", cmd->args[0], ": Permission denied\n", 2);
+			free_cmd(cmd);
+			free_env(env);
             free_doublechar(env_array);
             exit(126);
         }
@@ -103,12 +105,16 @@ void	child_command(t_command *cmd, t_env *env)
 	else if (!(path = find_path(cmd->args[0], env)))
 	{
 		ft_putstr3("minishell: ", cmd->args[0], ": command not found\n", 2);
+		free_cmd(cmd);
+		free_env(env);
 		free_doublechar(env_array);
 		exit(127);
 	}
 	execve(path, cmd->args, env_array);
 	perror("minishell:");
 	free_doublechar(env_array);
+	free_cmd(cmd);
+	free_env(env);
 	exit(127);
 }
 
@@ -154,6 +160,8 @@ int	execute_one_command(t_command *cmd, t_env *env, int exit_code)
         	else
         	{
             	ft_putstr3("minishell: ", cmd->args[0], ": Permission denied\n", 2);
+				free_cmd(cmd);
+				free_env(env);
             	free_doublechar(env_array);
             	exit(126);
         	}
@@ -161,10 +169,14 @@ int	execute_one_command(t_command *cmd, t_env *env, int exit_code)
 		else if (!(path = find_path(cmd->args[0], env)))
 		{
 			ft_putstr3("minishell: ", cmd->args[0], ": command not found\n", 2);
+			free_cmd(cmd);
+			free_env(env);
 			free_doublechar(env_array);
 			exit(127);
 		}
 		execve(path, cmd->args, env_array);
+		free_cmd(cmd);
+		free_env(env);
 		free_doublechar(env_array);
 		exit(127);
 	}

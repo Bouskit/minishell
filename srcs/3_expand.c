@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/13 23:36:48 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/14 11:33:56 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/14 14:48:23 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ typedef enum e_quote
 
 typedef struct s_expand
 {
-    const char		*input;
+    char		*input;
     int				i;
     char			*result;
     t_env			*env;

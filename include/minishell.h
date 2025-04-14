@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 13:55:40 by xiazhang          #+#    #+#             */
-/*   Updated: 2025/04/13 14:00:55 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/15 01:14:28 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ int	add_cmd_infile(t_command **cmd, t_token **token, int *in_i);
 t_command		*parse_tokens(t_token *tokens);
 
 //utils
-void 	*ft_realloc(void *ptr, size_t new_size);
+void 	*ft_realloc(void *ptr, size_t old_size, size_t new_size);
 char 	*ft_strndup(const char *s, size_t n);
 size_t	ft_strlen(const char *s);
 char	*ft_strdup(const char *s);
@@ -123,7 +123,7 @@ char	*ft_strdup(const char *s);
 //free all kinds
 void	free_env(t_env *env);
 void	free_tokens(t_token *tokens);
-void	free_cmd(t_command *cmds);
+void	free_cmd(t_command *cmd);
 
 
 t_token	*expand_tokens(t_token *token, t_env *env, int exit_code);
@@ -189,7 +189,6 @@ int do_unset(char **args, t_env **e);
 
 //-------------------------- UTILS ----------------------------
 
-int	strcmp_space(char *s1, char *s2);
 int str_is_num(char *str);
 void free_doublechar(char **str);
 void ft_putstr3(char *a1, char *a2, char *a3, int fd);

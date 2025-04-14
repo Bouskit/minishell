@@ -3,45 +3,41 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: xiazhang <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 10:50:27 by xiazhang          #+#    #+#             */
-/*   Updated: 2025/03/11 10:50:29 by xiazhang         ###   ########.fr       */
+/*   Updated: 2025/04/15 00:32:26 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "../include/minishell.h"
 
-/*void *ft_realloc(void *ptr, size_t new_size)
+void	*ft_realloc(void *ptr, size_t old_size, size_t new_size)
 {
-    // If new_size is 0, free memory and return NULL
-    if (new_size == 0)
-	{
-        free(ptr);
-        return NULL;
-    }
-    
-    // If ptr is NULL, behave like malloc(new_size)
-    if (ptr == NULL)
-	{
-        return malloc(new_size);
-    }
-    
-    // Allocate new memory block
-    void *new_ptr = malloc(new_size);
-    if (!new_ptr)
-	{
-        return NULL; // Memory allocation failed
-    }
-    
-    // Copy the old data to the new block (copy only the minimum size)
-    size_t old_size = malloc_usable_size(ptr); // This function is platform-dependent
-    memcpy(new_ptr, ptr, old_size < new_size ? old_size : new_size);
-    
-    free(ptr);
-    
-    return new_ptr;
-}*/
+	void	*new_ptr;
 
+	if (!ptr)
+		return (malloc(new_size));
+	if (new_size == 0)
+	{
+		free(ptr);
+		return (NULL);
+	}
+	if (new_size == old_size)
+		return (ptr);
+	new_ptr = malloc(new_size);
+	if (!new_ptr)
+	{
+		free(ptr);
+		return (NULL);
+	}
+	if (old_size > new_size)
+		ft_memcpy(new_ptr, ptr, new_size);
+	else
+		ft_memcpy(new_ptr, ptr, old_size);
+	free(ptr);
+	return (new_ptr);
+}
 char *ft_strndup(const char *s, size_t n)
 {
     size_t len = 0;

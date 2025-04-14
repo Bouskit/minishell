@@ -1,14 +1,15 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free.c                                             :+:      :+:    :+:   */
+/*   5_free.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: xiazhang <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 12:57:39 by xiazhang          #+#    #+#             */
-/*   Updated: 2025/03/11 12:57:41 by xiazhang         ###   ########.fr       */
+/*   Updated: 2025/04/15 01:17:09 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 void free_env(t_env *env)
@@ -28,22 +29,6 @@ void free_env(t_env *env)
 		free(tmp);
 	}
 }
-
-/*void	free_tokens(t_token *tokens)
-{
-	t_token	*tmp;
-	
-	if (!tokens)
-		return;
-	while (tokens)
-	{
-		tmp = tokens;
-		tokens = tokens->next;
-		if (tmp->value)
-			free (tmp->value);
-		free (tmp);
-	}
-}*/
 void free_tokens(t_token *tokens)
 {
     t_token *tmp;
@@ -57,6 +42,7 @@ void free_tokens(t_token *tokens)
         tokens = tmp;            // Move to the next node
     }
 }
+
 
 void	free_cmd(t_command *cmds)
 {
@@ -95,3 +81,5 @@ void	free_cmd(t_command *cmds)
 		free(tmp);
 	}
 }
+	
+

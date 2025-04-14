@@ -4,13 +4,13 @@ NAME = minishell
 SRCS_DIR = srcs
 
 # List of source files
-SRCS = $(SRCS_DIR)/minishell_main.c \
+SRCS = $(SRCS_DIR)/main.c \
 		$(SRCS_DIR)/1_env.c \
 		$(SRCS_DIR)/2_tokenization.c \
 		$(SRCS_DIR)/3_expand.c \
 		$(SRCS_DIR)/4_parsing.c \
 		$(SRCS_DIR)/utils.c \
-		$(SRCS_DIR)/free.c \
+		$(SRCS_DIR)/5_free.c \
 		execution/path.c \
 		execution/exec.c \
 		execution/redirections.c \

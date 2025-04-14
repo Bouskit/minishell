@@ -6,13 +6,13 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 14:42:48 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/03 00:38:31 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/15 01:19:25 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void my_perror(char *a1, char *a2, char *a3)
+void	my_perror(char *a1, char *a2, char *a3)
 {
 	if (a1)
 		ft_putstr_fd(a1, 1);
@@ -23,10 +23,10 @@ void my_perror(char *a1, char *a2, char *a3)
 	perror("");
 }
 
-void update_pwd(char *pwd, char *name, t_env **env)
+void	update_pwd(char *pwd, char *name, t_env **env)
 {
-	t_env *tmp;
-	
+	t_env	*tmp;
+
 	tmp = *env;
 	while (tmp)
 	{
@@ -35,21 +35,22 @@ void update_pwd(char *pwd, char *name, t_env **env)
 			if (tmp->value)
 				free(tmp->value);
 			tmp->value = ft_strdup(pwd);
-			return;
+			return ;
 		}
 		tmp = tmp->next;
 	}
 }
 
-int do_cd(char **args, t_env **env)
+int	do_cd(char **args, t_env **env)
 {
-	char old[256];
-	char new[256];
+	char	old[256];
+	char	new[256];
 
 	if (!args[1])
 	{
-		printf("minishell: %s: cd with only a relative or absolute path\n", args[0]);
-		return (1) ;
+		printf("minishell: %s: cd with only a relative or absolute path\n",
+			args[0]);
+		return (1);
 	}
 	if (args[2])
 	{

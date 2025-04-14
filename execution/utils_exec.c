@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 23:16:18 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/03 00:56:00 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/14 23:52:04 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ char **env_to_envp(t_env *env)
 {
     int size;
 	char **envp;
+	char *temp;
 	int i;
 	t_env *tmp;
 	
@@ -42,8 +43,9 @@ char **env_to_envp(t_env *env)
     i = 0;
     while (tmp)
     {
-        envp[i] = ft_strjoin(tmp->name, "=");
-		envp[i] = ft_strjoin(envp[i], tmp->value);
+        temp = ft_strjoin(tmp->name, "=");
+		envp[i] = ft_strjoin(temp, tmp->value);
+		free(temp);
         tmp = tmp->next;
         i++;
     }

@@ -6,16 +6,16 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 17:55:04 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/04 21:10:38 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/15 01:20:06 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void unset_var(char *args, t_env **e)
+void	unset_var(char *args, t_env **e)
 {
-	t_env *current;
-	t_env *previous;
+	t_env	*current;
+	t_env	*previous;
 
 	if (!ft_strcmp(args, (*e)->name))
 	{
@@ -25,7 +25,7 @@ void unset_var(char *args, t_env **e)
 		if (current->value)
 			free(current->value);
 		free(current);
-		return;
+		return ;
 	}
 	previous = *e;
 	current = (*e)->next;
@@ -45,12 +45,12 @@ void unset_var(char *args, t_env **e)
 	}
 }
 
-int do_unset(char **args, t_env **e)
+int	do_unset(char **args, t_env **e)
 {
 	int i;
 
 	i = 1;
-	while(args[i])
+	while (args[i])
 	{
 		unset_var(args[i], e);
 		i++;

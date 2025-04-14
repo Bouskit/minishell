@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 00:27:44 by bboukach          #+#    #+#             */
-/*   Updated: 2025/01/20 18:10:24 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/14 15:41:44 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,19 +111,3 @@ char	*get_next_line(int fd)
 	return (line);
 }
 
-/*int main()
-{
-  int fd;
-  char *line;
-
-  fd = open("texte.txt", O_RDONLY);
-  while (1)
-  {
-	line = get_next_line(fd);
-	if (line == NULL)
-		break ;
-	printf("%s", line);
-	free(line);
-  }
-  return (0);
-}*/

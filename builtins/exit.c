@@ -6,21 +6,18 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:19:36 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/03 00:40:50 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/15 01:19:53 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-int do_exit(char **args)
+int	do_exit(char **args)
 {
 	int exit_code;
-	
+
 	if (!args[1])
-	{
-		//exit(status->exit_code);
 		exit(0);
-	}
 	if (!str_is_num(args[1]))
 	{
 		write(2, "exit\nminishell: exit: ", 22);

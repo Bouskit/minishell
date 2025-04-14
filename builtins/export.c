@@ -6,20 +6,21 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:22:06 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/03 00:41:07 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/15 01:19:57 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void new_var(char *args, t_env **e)
+void	new_var(char *args, t_env **e)
 {
-	t_env *tmp;
-	t_env *new;
-	int i = 0;
-	char *value;
-	char *name;
+	t_env	*tmp;
+	t_env	*new;
+	int		i;
+	char	*value;
+	char	*name;
 
+	i = 0;
 	tmp = *e;
 	value = NULL;
 	if (ft_strchr(args, '='))
@@ -30,12 +31,11 @@ void new_var(char *args, t_env **e)
 		if (args[i] != '\0')
 			value = ft_substr(args, i + 1, ft_strlen(args));
 	}
-	else 
+	else
 		name = ft_strdup(args);
-	
 	while (tmp)
 	{
-		if(!ft_strcmp(tmp->name, name))
+		if (!ft_strcmp(tmp->name, name))
 		{
 			if (value)
 			{
@@ -43,55 +43,56 @@ void new_var(char *args, t_env **e)
 				tmp->value = value;
 			}
 			free(name);
-			return;
+			return ;
 		}
 		tmp = tmp->next;
 	}
-	
 	new = env_new(name, value);
 	env_addback(e, new);
 }
 
-int export_equal(char *args)
+int	export_equal(char *args)
 {
-    int i = 0;
-    
-    if (!args[0] || (!ft_isalpha(args[0]) && args[0] != '_'))
-        return (0);
-    while (args[i] && args[i] != '=')
-    {
-        if (!ft_isalnum(args[i]) && args[i] != '_')
-            return (0);
-        i++;
-    }
-    return (1);
+	int	i;
+
+	i = 0;
+	if (!args[0] || (!ft_isalpha(args[0]) && args[0] != '_'))
+		return (0);
+	while (args[i] && args[i] != '=')
+	{
+		if (!ft_isalnum(args[i]) && args[i] != '_')
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
-void export_print(t_env *e)
+void	export_print(t_env *e)
 {
-	t_env *tmp;
+	t_env	*tmp;
 
 	tmp = e;
-	while(tmp)
+	while (tmp)
 	{
 		if (tmp->value)
 			printf("export %s=\"%s\"\n", tmp->name, tmp->value);
-		else 
+		else
 			printf("export %s\n", tmp->name);
 		tmp = tmp->next;
 	}
 	return ;
 }
 
-void export_sort(t_env *e)
+void	export_sort(t_env *e)
 {
-	t_env *loop;
-	t_env *copy;
-	char *tmp;
-	int swap = 1;
-	int i;
-	int len;
-	
+	t_env	*loop;
+	t_env	*copy;
+	char	*tmp;
+	int		swap;
+	int		i;
+	int		len;
+
+	swap = 1;
 	loop = e;
 	copy = NULL;
 	while (loop)
@@ -112,11 +113,9 @@ void export_sort(t_env *e)
 				tmp = loop->name;
 				loop->name = loop->next->name;
 				loop->next->name = tmp;
-
 				tmp = loop->value;
 				loop->value = loop->next->value;
 				loop->next->value = tmp;
-				
 				swap = 1;
 			}
 			loop = loop->next;
@@ -127,7 +126,7 @@ void export_sort(t_env *e)
 	export_print(copy);
 }
 
-int do_export(char **args, t_env **e)
+int	do_export(char **args, t_env **e)
 {
 	int i = 1;
 	if (!args[1])
@@ -136,8 +135,9 @@ int do_export(char **args, t_env **e)
 	{
 		if (args[i] && export_equal(args[i]))
 			new_var(args[i], e);
-		else 
-			printf("minishell: export: \'%s\': not a valid identifier\n", args[i]);
+		else
+			printf("minishell: export: \'%s\': not a valid identifier\n",
+				args[i]);
 		i++;
 	}
 	return (0);
