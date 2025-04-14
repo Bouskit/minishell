@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 13:55:40 by xiazhang          #+#    #+#             */
-/*   Updated: 2025/04/04 22:31:58 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/13 14:00:55 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,10 @@ typedef enum e_token_type//add builtin
 	HEREDOC,//3 <<
 	R_OUT,//4 >: Overwrites the file with the command’s output."echo "Hello" > file.txt
 	APPEND,//5 >>: Appends the output to the file instead of overwriting.
-	QUOTE_SINGLE,//6
-	QUOTE_DOUBLE,//7
+	SINGLE_QUOTES,//6
+	DOUBLE_QUOTES,//7
+	EXIT_STATUS,
+	VAR,
 	ERROR = -2
 }	t_token_type;
 
@@ -61,18 +63,6 @@ typedef struct	s_token
 	struct s_token	*next;
 }	t_token;
 
-/*typedef struct s_in
-{
-	int				*heredoc;      
-    char			**infile;     
-} t_in;*/
-
-/*typedef struct s_out
-{
-	int				*append;      
-    char			**outfile;     
-} t_out;*/
-
 typedef struct	s_command
 {
 	char				**args;
@@ -81,6 +71,7 @@ typedef struct	s_command
 	int					*append;
 	char				**outfile;
 	int					index;
+	int exit_code;
 	struct	s_command	*next;
 }	t_command;
 
@@ -134,6 +125,8 @@ void	free_env(t_env *env);
 void	free_tokens(t_token *tokens);
 void	free_cmd(t_command *cmds);
 
+
+t_token	*expand_tokens(t_token *token, t_env *env, int exit_code);
 //----------------------------- BILAL -----------------------------
 
 //-------------------------- EXECUTION ----------------------------

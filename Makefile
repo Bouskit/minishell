@@ -7,7 +7,8 @@ SRCS_DIR = srcs
 SRCS = $(SRCS_DIR)/minishell_main.c \
 		$(SRCS_DIR)/1_env.c \
 		$(SRCS_DIR)/2_tokenization.c \
-		$(SRCS_DIR)/3_parsing.c \
+		$(SRCS_DIR)/3_expand.c \
+		$(SRCS_DIR)/4_parsing.c \
 		$(SRCS_DIR)/utils.c \
 		$(SRCS_DIR)/free.c \
 		execution/path.c \

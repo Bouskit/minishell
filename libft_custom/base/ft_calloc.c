@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 22:30:17 by bboukach          #+#    #+#             */
-/*   Updated: 2024/10/30 12:26:27 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/06 21:47:39 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,9 @@
 void	*ft_calloc(size_t nbr, size_t size)
 {
 	unsigned char	*str;
-	size_t			i;
 
 	if (size != 0 && 65535 / size < nbr)
 		return (NULL);
-	i = 0;
 	str = malloc(size * nbr);
 	if (!str)
 		return (NULL);

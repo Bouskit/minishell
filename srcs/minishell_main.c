@@ -95,6 +95,7 @@ int	main(int argc, char **argv, char **envp)
 	char	*cmd_line;
 	t_token	*tokens; 
 	t_command	*cmds;
+	t_token	*expanded;
 	int exit_code;
 	
 	handle_sig();
@@ -117,13 +118,19 @@ int	main(int argc, char **argv, char **envp)
 		tokens = tokenization (cmd_line);
 		free (cmd_line);
 		if (!tokens)
-		continue;
+			continue;
 		if (!check_syntax(tokens))
 		{
 			free_tokens(tokens);
 			continue;
 		}
-		cmds = parse_tokens(tokens);
+		expanded = expand_tokens(tokens, env, exit_code);
+		if (!expanded)
+		{
+			free_tokens(tokens);
+			continue;
+		}
+		cmds = parse_tokens(expanded);
 		if (!cmds)
 		{
 			free_tokens(tokens);
@@ -132,6 +139,7 @@ int	main(int argc, char **argv, char **envp)
 		//print_token(tokens);
 		//print_commands(cmds);
 		free_tokens(tokens);
+		free_tokens(expanded);
 		exit_code = execute(cmds, env);
 		free_cmd(cmds);
 	}
