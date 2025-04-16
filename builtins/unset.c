@@ -6,11 +6,19 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 17:55:04 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/15 01:20:06 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/15 01:42:58 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+
+void	unset_free(t_env *current)
+{
+	free(current->name);
+	if (current->value)
+		free(current->value);
+	free(current);
+}
 
 void	unset_var(char *args, t_env **e)
 {
@@ -21,10 +29,7 @@ void	unset_var(char *args, t_env **e)
 	{
 		current = *e;
 		*e = (*e)->next;
-		free(current->name);
-		if (current->value)
-			free(current->value);
-		free(current);
+		unset_free(current);
 		return ;
 	}
 	previous = *e;
@@ -34,10 +39,7 @@ void	unset_var(char *args, t_env **e)
 		if (!ft_strcmp(args, current->name))
 		{
 			previous->next = current->next;
-			free(current->name);
-			if (current->value)
-				free(current->value);
-			free(current);
+			unset_free(current);
 			return ;
 		}
 		previous = current;
@@ -47,7 +49,7 @@ void	unset_var(char *args, t_env **e)
 
 int	do_unset(char **args, t_env **e)
 {
-	int i;
+	int	i;
 
 	i = 1;
 	while (args[i])

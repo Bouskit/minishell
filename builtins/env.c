@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:19:57 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/15 01:19:32 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/15 01:21:46 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	do_env(t_env *e)
 {
-	t_env *tmp;
+	t_env	*tmp;
 
 	tmp = e;
 	while (tmp)

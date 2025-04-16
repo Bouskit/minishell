@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:19:50 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/15 01:20:02 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/15 01:22:16 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	do_pwd(void)
 {
-	char pwd[256];
+	char	pwd[256];
 
 	getcwd(pwd, 256);
 	printf("%s\n", pwd);

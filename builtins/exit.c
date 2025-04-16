@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:19:36 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/15 01:19:53 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/15 01:22:02 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	do_exit(char **args)
 {
-	int exit_code;
+	int	exit_code;
 
 	if (!args[1])
 		exit(0);

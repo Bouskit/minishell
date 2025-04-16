@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 13:55:40 by xiazhang          #+#    #+#             */
-/*   Updated: 2025/04/15 01:14:28 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/16 20:04:06 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ typedef struct	s_command
 	int					*append;
 	char				**outfile;
 	int					index;
-	int exit_code;
+	int 				exit_code;
 	struct	s_command	*next;
 }	t_command;
 
