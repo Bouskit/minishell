@@ -1,53 +1,95 @@
+# Nom du projet
 NAME = minishell
-CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
-INCLUDE = -I include/ -I libft/
-LIBS = -lreadline -lncurses
 
 SRCS_DIR = srcs
-OBJS_DIR = objs
-LIBFT_DIR = libft
-LIBFT = $(LIBFT_DIR)/libft.a
 
 # List of source files
-SRCS = $(SRCS_DIR)/minishell_main.c \
-		$(SRCS_DIR)/1_env.c \
-		$(SRCS_DIR)/2_tokenization.c \
-		$(SRCS_DIR)/3_expand_vars.c \
-		$(SRCS_DIR)/4_parsing.c \
+SRCS = $(SRCS_DIR)/main.c \
+		$(SRCS_DIR)/1_env_a.c \
+		$(SRCS_DIR)/1_env_b.c \
+		$(SRCS_DIR)/2_tokenization_a.c \
+		$(SRCS_DIR)/2_tokenization_b.c \
+		$(SRCS_DIR)/2_tokenization_c.c \
+		$(SRCS_DIR)/3_expand_a.c \
+		$(SRCS_DIR)/3_expand_b.c \
+		$(SRCS_DIR)/3_expand_c.c \
+		$(SRCS_DIR)/4_parsing_a.c \
+		$(SRCS_DIR)/4_parsing_b.c \
+		$(SRCS_DIR)/4_parsing_c.c \
+		$(SRCS_DIR)/5_free_a.c \
+		$(SRCS_DIR)/5_free_b.c \
 		$(SRCS_DIR)/utils.c \
-		$(SRCS_DIR)/free.c
+		$(SRCS_DIR)/utils2.c \
+		execution/path.c \
+		execution/exec.c \
+		execution/redirections.c \
+		execution/utils_exec.c \
+		builtins/builtins.c \
+		builtins/echo.c \
+		builtins/env.c \
+		builtins/exit.c \
+		builtins/export.c \
+		builtins/pwd.c \
+		builtins/unset.c \
+		builtins/cd.c \
+		signal/signal.c \
 
-# Convert source files to object files
-OBJS = $(SRCS:$(SRCS_DIR)/%.c=$(OBJS_DIR)/%.o)
+# Compilateur
+CC = cc
 
-# Default target
-all: $(NAME)
+# Flags
+CFLAGS = -Wall -Wextra -Werror -g
 
-# Compile the libft library
+# Flags pour readline
+LDFLAGS = -lreadline -lhistory
+
+# Fichiers objets générés
+OBJS = $(SRCS:.c=.o)
+
+# Répertoires des bibliothèques
+LIBFT_DIR = ./libft_custom
+
+# Fichiers des bibliothèques
+LIBFT = $(LIBFT_DIR)/libft.a
+
+# Couleurs pour afficher les messages
+RED = \033[31m
+GREEN = \033[32m
+CYAN = \033[36m
+RESET = \033[0m
+
+# Règle par défaut pour créer le programme final
+$(NAME): $(LIBFT) $(OBJS)
+	@echo "$(GREEN)Compilation du projet...$(RESET)"
+	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LIBFT) $(LDFLAGS)
+
+# Règle pour compiler la Libft
 $(LIBFT):
+	@echo "$(GREEN)Compilation de la Libft...$(RESET)"
 	$(MAKE) -C $(LIBFT_DIR)
 
-# Compile minishell with libft
-$(NAME): $(OBJS) $(LIBFT)
-	$(CC) $(CFLAGS) $(OBJS) -o $@ $(INCLUDE) -L$(LIBFT_DIR) -lft $(LIBS)
+# Règle générique pour compiler les fichiers .c en .o
+%.o: %.c
+	@echo "$(GREEN)Compilation de $<...$(RESET)"
+	$(CC) $(CFLAGS) -c $< -o $@ -I .
 
-# Rule to compile object files
-$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c | $(OBJS_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+# Règle par défaut pour compiler le programme
+all: $(NAME)
 
-# Ensure objs/ directory exists
-$(OBJS_DIR):
-	mkdir -p $(OBJS_DIR)
-
+# Nettoyage des fichiers objets
 clean:
-	rm -rf $(OBJS_DIR)
+	@echo "$(RED)Nettoyage des objets...$(RESET)"
 	$(MAKE) clean -C $(LIBFT_DIR)
+	rm -f $(OBJS)
 
+# Nettoyage complet (objets + programme)
 fclean: clean
-	rm -f $(NAME)
+	@echo "$(RED)Nettoyage complet...$(RESET)"
 	$(MAKE) fclean -C $(LIBFT_DIR)
+	rm -f $(NAME)
 
+# Règle pour tout refaire (nettoyage complet + recompilation)
 re: fclean all
 
+# Déclaration des cibles sans fichiers associés
 .PHONY: all clean fclean re
