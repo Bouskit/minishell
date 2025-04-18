@@ -6,51 +6,55 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 23:15:25 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/14 19:56:15 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/17 14:17:35 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
+void	handle_infile(int *fd, int *pipehd, char *infile, int is_heredoc)
+{
+    if (is_heredoc)
+    {
+        pipe(pipehd);
+        do_heredoc(pipehd, infile);
+    }
+    else
+    {
+        if (*fd != -1)
+            close(*fd);
+        *fd = open(infile, O_RDONLY);
+        if (*fd < 0)
+        {
+            perror(infile);
+            exit(1);
+        }
+    }
+}
+
 void redir_in(t_command *cmd)
 {
-	int x = 0;
-	int fd = -1;
-	int pipehd[2];
+    int x = 0;
+    int fd = -1;
+    int pipehd[2];
 
-	if (cmd->infile && cmd->infile[0])
-	{
-		while (cmd->infile[x])
-		{
-			if (cmd->in[x])
-			{
-				pipe(pipehd);
-				do_heredoc(pipehd, cmd->infile[x]);
-			}
-			else
-			{
-				if (fd != -1)
-					close (fd);
-				fd = open(cmd->infile[x], O_RDONLY);
-				if (fd < 0)
-				{
-					perror(cmd->infile[x]);
-					exit(1);
-				}
-			}
-			x++;
-		}
-		if (cmd->in[x - 1])
-		{
-			dup2(pipehd[0], STDIN_FILENO);
-			close(pipehd[0]);
-		}
-		else 
-			dup2(fd, STDIN_FILENO);
-		if (fd > 0)
-			close(fd);
-	}
-	return;
+    if (cmd->infile && cmd->infile[0])
+    {
+        while (cmd->infile[x])
+        {
+            handle_infile(&fd, pipehd, cmd->infile[x], cmd->in[x]);
+            x++;
+        }
+        if (cmd->in[x - 1])
+        {
+            dup2(pipehd[0], STDIN_FILENO);
+            close(pipehd[0]);
+        }
+        else 
+            dup2(fd, STDIN_FILENO);
+        if (fd > 0)
+            close(fd);
+    }
 }
 
 void redir_out(t_command *cmd)

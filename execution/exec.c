@@ -6,11 +6,25 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 23:14:15 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/15 01:05:49 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/17 17:09:55 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+
+void redir_in_and_out(t_command *cmd)
+{
+	redir_in(cmd);
+	redir_out(cmd);
+}
+
+void free_exitcode(t_command *cmd, t_env *env, char **env_array, int exitcode)
+{
+	free_cmd(cmd);
+	free_env(env);
+	free_doublechar(env_array);
+	exit(exitcode);
+}
 
 void	close_unused_pipes(int **pipes, int num_cmds, int i)
 {
@@ -27,11 +41,54 @@ void	close_unused_pipes(int **pipes, int num_cmds, int i)
     }
 }
 
+char *command_path(t_command *cmd, t_env *env, char **env_array)
+{
+    char *path;
+
+    if (access(cmd->args[0], F_OK) == 0)
+    {
+        if (access(cmd->args[0], X_OK) == 0)
+            path = ft_strdup(cmd->args[0]);
+        else
+        {
+            ft_putstr3("minishell: ", cmd->args[0], ": Permission denied\n", 2);
+            free_exitcode(cmd, env, env_array, 126);
+        }
+    }
+    else if (!(path = find_path(cmd->args[0], env)))
+    {
+        ft_putstr3("minishell: ", cmd->args[0], ": command not found\n", 2);
+        free_exitcode(cmd, env, env_array, 127);
+    }
+    return (path);
+}
+
+int	wait_exitcode(int **pipes, int num_cmds, pid_t last_pid, int exit_code)
+{
+    int		i;
+    int		status;
+    pid_t	current_pid;
+
+	i = 0;
+    close_all_pipes(pipes);
+    while (i < num_cmds)
+    {
+        current_pid = waitpid(-1, &status, 0);
+        if (current_pid == last_pid)
+        {
+            if (WIFEXITED(status))
+                exit_code = WEXITSTATUS(status);
+            else if (WIFSIGNALED(status))
+                exit_code = 128 + WTERMSIG(status);
+        }
+        i++;
+    }
+    return (exit_code);
+}
+
 int	execute_pipe(t_command *cmd, t_env *env, int exit_code)
 {
 	pid_t	pid;
-	pid_t	current_pid;
-	int		status;
 	int		**pipes;
 	int		i;
 	int		num_cmds;
@@ -56,21 +113,7 @@ int	execute_pipe(t_command *cmd, t_env *env, int exit_code)
 		cmd = cmd->next;
 		i++;
 	}
-	i = 0;
-	close_all_pipes(pipes);
-	while (i < num_cmds)
-	{
-		current_pid = waitpid(-1, &status, 0);
-		if (current_pid == pid)
-		{
-			if (WIFEXITED(status))
-        		exit_code = WEXITSTATUS(status);
-			else if (WIFSIGNALED(status))
-        		exit_code = 128 + WTERMSIG(status);
-		}
-		i++;
-	}
-    return (exit_code);
+	return(wait_exitcode(pipes, num_cmds, pid, exit_code));
 }
 
 void	child_command(t_command *cmd, t_env *env)
@@ -82,40 +125,16 @@ void	child_command(t_command *cmd, t_env *env)
 		ft_strcmp(cmd->args[0], "minishell") == 0))
 		increment_shlvl(&env);
 	env_array = env_to_envp(env);
-	redir_in(cmd);
-	redir_out(cmd);
+	redir_in_and_out(cmd);
 	if (is_builtin(cmd->args[0]))
 	{
 		free_doublechar(env_array);
 		exit(execute_builtin(cmd, env));
 	}
-	if (access(cmd->args[0], F_OK) == 0)
-    {
-        if (access(cmd->args[0], X_OK) == 0)
-            path = ft_strdup(cmd->args[0]);
-        else
-        {
-            ft_putstr3("minishell: ", cmd->args[0], ": Permission denied\n", 2);
-			free_cmd(cmd);
-			free_env(env);
-            free_doublechar(env_array);
-            exit(126);
-        }
-    }
-	else if (!(path = find_path(cmd->args[0], env)))
-	{
-		ft_putstr3("minishell: ", cmd->args[0], ": command not found\n", 2);
-		free_cmd(cmd);
-		free_env(env);
-		free_doublechar(env_array);
-		exit(127);
-	}
+	path = command_path(cmd, env, env_array);
 	execve(path, cmd->args, env_array);
 	perror("minishell:");
-	free_doublechar(env_array);
-	free_cmd(cmd);
-	free_env(env);
-	exit(127);
+	free_exitcode(cmd, env, env_array, 127);
 }
 
 int    execute_one_builtin(t_command *cmd, t_env *env, int exit_code)
@@ -125,8 +144,7 @@ int    execute_one_builtin(t_command *cmd, t_env *env, int exit_code)
 
     stdin_cpy = dup(STDIN_FILENO);
     stdout_cpy = dup(STDOUT_FILENO);
-    redir_in(cmd);
-    redir_out(cmd);
+    redir_in_and_out(cmd);
     exit_code = execute_builtin(cmd, env);
     dup2(stdin_cpy, STDIN_FILENO);
     dup2(stdout_cpy, STDOUT_FILENO);
@@ -134,6 +152,7 @@ int    execute_one_builtin(t_command *cmd, t_env *env, int exit_code)
     close(stdout_cpy);
     return (exit_code);
 }
+
 
 int	execute_one_command(t_command *cmd, t_env *env, int exit_code)
 {
@@ -151,34 +170,10 @@ int	execute_one_command(t_command *cmd, t_env *env, int exit_code)
 		ft_strcmp(cmd->args[0], "minishell") == 0))
 			increment_shlvl(&env);
 		env_array = env_to_envp(env);
-		redir_in(cmd);
-		redir_out(cmd);
-        if (access(cmd->args[0], F_OK) == 0)
-        {
-			if (access(cmd->args[0], X_OK) == 0)    
-				path = ft_strdup(cmd->args[0]);
-        	else
-        	{
-            	ft_putstr3("minishell: ", cmd->args[0], ": Permission denied\n", 2);
-				free_cmd(cmd);
-				free_env(env);
-            	free_doublechar(env_array);
-            	exit(126);
-        	}
-		}
-		else if (!(path = find_path(cmd->args[0], env)))
-		{
-			ft_putstr3("minishell: ", cmd->args[0], ": command not found\n", 2);
-			free_cmd(cmd);
-			free_env(env);
-			free_doublechar(env_array);
-			exit(127);
-		}
+		redir_in_and_out(cmd);
+        path = command_path(cmd, env, env_array);
 		execve(path, cmd->args, env_array);
-		free_cmd(cmd);
-		free_env(env);
-		free_doublechar(env_array);
-		exit(127);
+		free_exitcode(cmd, env, env_array, 127);
 	}
 	waitpid(pid, &status, 0);
     if (WIFEXITED(status))

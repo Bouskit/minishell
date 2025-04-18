@@ -9,13 +9,13 @@ SRCS = $(SRCS_DIR)/main.c \
 		$(SRCS_DIR)/2_tokenization.c \
 		$(SRCS_DIR)/3_expand.c \
 		$(SRCS_DIR)/4_parsing.c \
-		$(SRCS_DIR)/utils.c \
 		$(SRCS_DIR)/5_free.c \
+		$(SRCS_DIR)/utils.c \
+		$(SRCS_DIR)/utils2.c \
 		execution/path.c \
 		execution/exec.c \
 		execution/redirections.c \
 		execution/utils_exec.c \
-		utils000.c \
 		builtins/builtins.c \
 		builtins/echo.c \
 		builtins/env.c \

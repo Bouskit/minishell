@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/13 23:36:48 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/14 14:48:23 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/17 17:15:20 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,12 +132,6 @@ void	extract_var(t_expand *exp)
         len++;
     }
     var_name = ft_substr(exp->input, start, len);
-    if (!var_name)
-    {
-        ft_putstr_fd("Error: ft_substr failed for var name\n", 2);
-        exp->status = 1;
-        return ;
-    }
     var_value = get_env_value(exp->env, var_name);
     if (var_value)
         exp->result = str_append(exp->result, var_value);

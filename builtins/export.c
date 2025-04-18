@@ -6,22 +6,42 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:22:06 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/16 20:39:57 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/17 14:09:56 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
+int	update_var(t_env *env, char *name, char *value)
+{
+    t_env *tmp;
+
+	tmp = env;
+    while (tmp)
+    {
+        if (!ft_strcmp(tmp->name, name))
+        {
+            if (value)
+            {
+                free(tmp->value);
+                tmp->value = value;
+            }
+            free(name);
+            return (1);
+        }
+        tmp = tmp->next;
+    }
+    return (0);
+}
+
 void	new_var(char *args, t_env **e)
 {
-	t_env	*tmp;
 	t_env	*new;
 	int		i;
 	char	*value;
 	char	*name;
 
 	i = 0;
-	tmp = *e;
 	value = NULL;
 	if (ft_strchr(args, '='))
 	{
@@ -33,20 +53,8 @@ void	new_var(char *args, t_env **e)
 	}
 	else
 		name = ft_strdup(args);
-	while (tmp)
-	{
-		if (!ft_strcmp(tmp->name, name))
-		{
-			if (value)
-			{
-				free(tmp->value);
-				tmp->value = value;
-			}
-			free(name);
-			return ;
-		}
-		tmp = tmp->next;
-	}
+	if (update_var(*e, name, value))
+		return ;
 	new = env_new(name, value);
 	env_addback(e, new);
 }
@@ -85,36 +93,44 @@ void	export_print(t_env *e)
 
 void swap_export(t_env *loop)
 {
-	char *tmp;
+	char *name;
+	char *value;
 
-	tmp = loop->name;
+	name = loop->name;
 	loop->name = loop->next->name;
-	loop->next->name = tmp;
-	tmp = loop->value;
+	loop->next->name = name;
+	value = loop->value;
 	loop->value = loop->next->value;
-	loop->next->value = tmp;
+	loop->next->value = value;
 }
 
+t_env *copy_export(t_env *e)
+{
+	t_env	*copy;
+	t_env *tmp;
+
+	copy = NULL;
+	tmp = e;
+	while (tmp)
+	{
+		env_addback(&copy, env_new(tmp->name, tmp->value));
+		tmp = tmp->next;
+	}
+	return (copy);
+}
 
 void	export_sort(t_env *e)
 {
 	t_env	*loop;
 	t_env	*copy;
-	char	*tmp;
 	int		swap;
 	int		i;
 	int		len;
 
 	swap = 1;
-	loop = e;
-	copy = NULL;
-	while (loop)
-	{
-		env_addback(&copy, env_new(loop->name, loop->value));
-		loop = loop->next;
-	}
-	len = env_size(copy);
-	while (swap)
+	copy = copy_export(e);
+	len = env_size(copy) + 1;
+	while (swap && --len > 0)
 	{
 		swap = 0;
 		i = -1;
@@ -123,17 +139,11 @@ void	export_sort(t_env *e)
 		{
 			if (loop->next && ft_strcmp(loop->name, loop->next->name) > 0)
 			{
-				tmp = loop->name;
-				loop->name = loop->next->name;
-				loop->next->name = tmp;
-				tmp = loop->value;
-				loop->value = loop->next->value;
-				loop->next->value = tmp;
+				swap_export(loop);
 				swap = 1;
 			}
 			loop = loop->next;
 		}
-		len--;
 	}
 	export_print(copy);
 }
