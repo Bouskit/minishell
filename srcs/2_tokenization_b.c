@@ -30,6 +30,8 @@ char	*extract_word(char *line, int *i)
 	{
 		if (line[*i] == '\'' || line[*i] == '"')
 			skip_quoted_word(line, i, line[*i]);
+		else if ( is_operator(line[*i]))
+			break ;
 		else
 			(*i)++;
 	}
