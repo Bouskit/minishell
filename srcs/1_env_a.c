@@ -9,13 +9,12 @@
 /*   Updated: 2025/04/14 15:38:19 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "../include/minishell.h"
 
 t_env	*env_last(t_env *e)
 {
-	t_env *tmp;
-	
+	t_env	*tmp;
+
 	if (!e)
 		return (NULL);
 	tmp = e;
@@ -29,20 +28,20 @@ t_env	*env_last(t_env *e)
 t_env	*env_new(char *name, char *value)
 {
 	t_env	*new;
-	
+
 	new = malloc(sizeof(t_env));
 	if (!new)
-	return (NULL);
+		return (NULL);
 	new->name = name;
 	new->value = value;
 	new->next = NULL;
 	return (new);
 }
 
-void env_addback(t_env **env, t_env *new)
+void	env_addback(t_env **env, t_env *new)
 {
 	if (!env || !new)
-		return;
+		return ;
 	if (*env)
 		env_last(*env)->next = new;
 	else
@@ -64,51 +63,30 @@ int	env_size(t_env *lst)
 	return (i);
 }
 
-void increment_shlvl(t_env **env)
+void	increment_shlvl(t_env **env)
 {
-    t_env *tmp;
-    int level;
-    int found;
+	t_env	*tmp;
+	int		level;
+	int		found;
 
-    tmp = *env;
-    found = 0;
+	tmp = *env;
+	found = 0;
 	level = 0;
-    while (tmp)
-    {
-        if (!ft_strcmp("SHLVL", tmp->name))
-        {
-            found = 1;
-            if (tmp->value)
-            {
-                level = ft_atoi(tmp->value);
-                free(tmp->value);
-            }
-            level++;
-            tmp->value = ft_itoa(level);
-        }
-        tmp = tmp->next;
-    }
-    if (!found)
-            env_addback(env, env_new(ft_strdup("SHLVL"), ft_strdup("1")));
-}
-
-t_env *init_env(char **envp)
-{
-	int i = 0;
-	t_env *e = NULL;
-	t_env *new;
-	char **temp;
-	while (envp[i])
+	while (tmp)
 	{
-		temp = ft_split(envp[i], '=');
-		if(!temp)
-			return (NULL);
-		new = env_new(ft_strdup(temp[0]), ft_strdup(temp[1]));
-		env_addback(&e, new);
-		free_doublechar(temp);
-		i++;
+		if (!ft_strcmp("SHLVL", tmp->name))
+		{
+			found = 1;
+			if (tmp->value)
+			{
+				level = ft_atoi(tmp->value);
+				free(tmp->value);
+			}
+			level++;
+			tmp->value = ft_itoa(level);
+		}
+		tmp = tmp->next;
 	}
-	return (e);
+	if (!found)
+		env_addback(env, env_new(ft_strdup("SHLVL"), ft_strdup("1")));
 }
-
-

@@ -12,22 +12,24 @@
 
 #include "include/minishell.h"
 
-int str_is_num(char *str)
+int	str_is_num(char *str)
 {
 	if (*str == '-')
 		str++;
-	while(*str)
+	while (*str)
 	{
-		if(!ft_isdigit(*str))
+		if (!ft_isdigit(*str))
 			return (0);
 		str++;
 	}
 	return (1);
 }
 
-void free_doublechar(char **str)
+void	free_doublechar(char **str)
 {
-	int i = 0;
+	int	i;
+
+	i = 0;
 	while (str[i])
 	{
 		free(str[i]);
@@ -36,7 +38,7 @@ void free_doublechar(char **str)
 	free(str);
 }
 
-void ft_putstr3(char *a1, char *a2, char *a3, int fd)
+void	ft_putstr3(char *a1, char *a2, char *a3, int fd)
 {
 	if (a1)
 		ft_putstr_fd(a1, fd);
@@ -45,4 +47,3 @@ void ft_putstr3(char *a1, char *a2, char *a3, int fd)
 	if (a3)
 		ft_putstr_fd(a3, fd);
 }
-

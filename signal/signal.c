@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 17:53:30 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/04 17:10:33 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/23 18:58:20 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,18 @@ void sigf(int signal)
         if (g_interactive == 0)
             rl_redisplay();
     }
+    else if (signal == SIGQUIT)
+    {
+        if (g_interactive == 1)
+            ft_putstr_fd("^\\Quit (core dumped)\n", STDERR_FILENO);
+    }
 }
 
 void handle_sig(void)
 {   
     signal(SIGINT, &sigf);
-    signal(SIGQUIT, SIG_IGN);  
+    if (g_interactive == 1)
+        signal(SIGQUIT, &sigf);
+    else 
+        signal(SIGQUIT, SIG_IGN);
 }
-	

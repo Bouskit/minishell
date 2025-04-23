@@ -1,147 +1,60 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/06 13:52:34 by xiazhang          #+#    #+#             */
+/*   Updated: 2025/04/23 19:00:23 by bboukach         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
-#include <stdio.h>
+int	g_interactive = 0;
 
-
-void	print_token(t_token	*tokens)
+static int	init_main(t_mini *mini, int argc, char **argv, char **envp)
 {
-	printf("\n🔹 tokens:\n");
-	while (tokens)
-    {
-		printf("Token: [%s] Type: [%d]\n", tokens->value, tokens->type);
-        tokens = tokens->next;
-    }
+	(void)argc, (void)argv;
+	mini->env = NULL;
+	mini->tokens = NULL;
+	mini->cmds = NULL;
+	mini->exit_code = 0;
+	mini->env = init_env(envp);
+	if (!mini->env)
+	{
+		ft_putstr_fd("Error: Failed to initialize environment\n", 2);
+		return (0);
+	}
+	return (1);
 }
-void print_commands(t_command *cmds)
-{
-	int in_i;
-	
-    while (cmds)
-    {
-		printf("🔹 Command %d\n", cmds->index);
-		
-        // Print arguments
-        if (cmds->args)
-        {
-			int i = 0;
-            while (cmds->args[i])
-            {
-				printf("  Arguments%d: \"%s\" ", i, cmds->args[i]);
-                i++;
-            }
-			printf("\n");
-        }
-        
-		
-        // Print input flags
-        if (cmds->in)
-		{
-			in_i = 0;
-			while (cmds->in[in_i] != -5)
-			{
-				printf("  Input Flag %d: \"%d\" ", in_i, cmds->in[in_i]);
-				in_i++;
-			}
-			printf("\n");
-		}
-		// Print input file
-		if (cmds->infile)
-		{
-			int in_f = 0;
-			while (cmds->infile[in_f])
-			{
-				printf("  Input Files %d : \"%s\" ", in_f,cmds->infile[in_f]);
-				in_f++;
-			}
-			printf("\n");
-			printf("\n");
-		}
-		
-		// Print append flags
-		if (cmds->append)
-		{
-			int out_a = 0;
-			while (cmds->append[out_a] != -5)
-			{
-				printf ("  Append Flag %d : \"%d\" ", out_a,cmds->append[out_a]);
-				out_a++;
-			}
-			printf("\n");
-		}
-        // Print output redirection
-        if (cmds->outfile)
-        {
-			int out_o = 0;
-            while (cmds->outfile[out_o])
-            {
-				printf("  Output Files %d : \"%s\" ", out_o, cmds->outfile[out_o]);
-                out_o++;
-            }
-            printf("\n");
-        }
-        // Move to the next command
-        cmds = cmds->next;
-    }
-}
-
-
-int g_interactive = 0;
 
 int	main(int argc, char **argv, char **envp)
 {
-	(void)argc;
-	(void)argv;
-	t_env	*env;
-	char	*cmd_line;
-	t_token	*tokens; 
-	t_command	*cmds;
-	t_token	*expanded;
-	int exit_code;
-	
-	handle_sig();
-	exit_code = 0;
-	env = init_env(envp);
-    if (!env)
-	{
-		ft_putstr_fd("Error: Failed to initialize environment\n", 2);
+	t_mini	mini;
+
+	if (!init_main(&mini, argc, argv, envp))
 		return (1);
-	}
 	while (1)
 	{
-		cmd_line = readline ("$minishell ");
-		if (!cmd_line)
+		handle_sig();
+		mini.cmd_line = readline ("$minishell ");
+		if (!mini.cmd_line)
 		{
 			printf("exit\n");
 			break ;
 		}
-		add_history(cmd_line);
-		tokens = tokenization (cmd_line);
-		free (cmd_line);
-		if (!tokens)
-			continue;
-		if (!check_syntax(tokens))
+		add_history(mini.cmd_line);
+		mini.cmds = parse_tokens(mini.cmd_line, mini.env, mini.exit_code);
+		if (!mini.cmds)
 		{
-			free_tokens(tokens);
-			continue;
+			free_cmd(mini.cmds);
+			continue ;
 		}
-		expanded = expand_tokens(tokens, env, exit_code);
-		if (!expanded)
-		{
-			free_tokens(tokens);
-			continue;
-		}
-		cmds = parse_tokens(expanded);
-		if (!cmds)
-		{
-			free_tokens(tokens);
-			continue;
-		}
-		free_tokens(tokens);
-		free_tokens(expanded);
-		exit_code = execute(cmds, env);
-		free_cmd(cmds);
+		mini.exit_code = execute(mini.cmds, mini.env);
+		free_cmd(mini.cmds);
 	}
-	free_env(env);
-	return (exit_code);
+	free_env(mini.env);
+	return (mini.exit_code);
 }
-

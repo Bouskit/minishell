@@ -6,23 +6,24 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 23:19:29 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/17 14:12:08 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/23 14:56:55 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-char *path_env(t_env *env)
+char	*path_env(t_env *env)
 {
-	t_env *temp = env;
+	t_env	*temp;
 
+	temp = env;
 	while (temp)
 	{
-		if(ft_strcmp(temp->name, "PATH") == 0)
-			return(temp->value);
+		if (ft_strcmp(temp->name, "PATH") == 0)
+			return (temp->value);
 		temp = temp->next;
 	}
-	return(NULL);
+	return (NULL);
 }
 
 char	*add_at_the_end(char *path, char *cmd)
@@ -71,18 +72,18 @@ char	**add_cmd_to_paths(char **paths, char *cmd)
 	return (cmd_paths);
 }
 
-char *find_path(char *cmd, t_env *env)
+char	*find_path(char *cmd, t_env *env)
 {
-	char **fullpath;
-	char **path_with_cmd;
-	char *tmp;
-	int i;
+	char	**fullpath;
+	char	**path_with_cmd;
+	char	*tmp;
+	int		i;
 
 	i = 0;
-	if(!cmd)
+	if (!cmd)
 		return (NULL);
 	if (!(fullpath = ft_split(path_env(env), ':')))
-		return NULL;
+		return (NULL);
 	path_with_cmd = add_cmd_to_paths(fullpath, cmd);
 	while (path_with_cmd[i])
 	{

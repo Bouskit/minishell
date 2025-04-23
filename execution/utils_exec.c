@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 23:16:18 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/14 23:52:04 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/23 19:54:41 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 
 void	close_all_pipes(int **pipes)
 {
-	int i = 0;
+	int	i;
 
+	i = 0;
 	if (!pipes)
-		return;
-
+		return ;
 	while (pipes[i])
 	{
 		close(pipes[i][0]);
@@ -27,41 +27,41 @@ void	close_all_pipes(int **pipes)
 	}
 }
 
-char **env_to_envp(t_env *env)
+char	**env_to_envp(t_env *env)
 {
-    int size;
-	char **envp;
-	char *temp;
-	int i;
-	t_env *tmp;
-	
+	int		size;
+	char	**envp;
+	char	*temp;
+	int		i;
+	t_env	*tmp;
+
 	tmp = env;
 	size = env_size(tmp);
-    envp = malloc((size + 1) * sizeof(char *)); 
-    if (!envp)
-        return NULL;
-    i = 0;
-    while (tmp)
-    {
-        temp = ft_strjoin(tmp->name, "=");
+	envp = malloc((size + 1) * sizeof(char *));
+	if (!envp)
+		return (NULL);
+	i = 0;
+	while (tmp)
+	{
+		temp = ft_strjoin(tmp->name, "=");
 		envp[i] = ft_strjoin(temp, tmp->value);
 		free(temp);
-        tmp = tmp->next;
-        i++;
-    }
-    envp[i] = NULL;
-    return (envp);
+		tmp = tmp->next;
+		i++;
+	}
+	envp[i] = NULL;
+	return (envp);
 }
 
-int **create_pipes(int nb_cmd)
+int	**create_pipes(int nb_cmd)
 {
-	int **pipes;
-	int i = 0;
+	int	**pipes;
+	int	i;
 
+	i = 0;
 	if (nb_cmd <= 1)
 		return (NULL);
 	pipes = malloc(sizeof(int *) * nb_cmd);
-
 	while (i < nb_cmd - 1)
 	{
 		pipes[i] = malloc(sizeof(int) * 2);
@@ -69,39 +69,43 @@ int **create_pipes(int nb_cmd)
 		i++;
 	}
 	pipes[i] = NULL;
-	return(pipes);
+	return (pipes);
 }
 
 void	do_heredoc(int pipehd[2], char *limiter)
 {
-	char *line;
+	char	*line;
+	int fd;
 
 	limiter = ft_strjoin(limiter, "\n");
+	fd = open("/dev/tty", O_WRONLY);
 	while (1)
 	{
-		write(open("/dev/tty", O_WRONLY), "> ", 2);
+		write(fd, "> ", 2);
 		line = get_next_line(0);
 		if (!line || (ft_strcmp(line, limiter) == 0))
 		{
 			if (!line)
-				write(open("/dev/tty", O_WRONLY), "\n", 1);
-			break;
+				write(fd, "\n", 1);
+			break ;
 		}
 		write(pipehd[1], line, ft_strlen(line));
 		free(line);
 	}
+	close(fd);
 	free(limiter);
 	free(line);
 	close(pipehd[1]);
-	return;
+	return ;
 }
 
-int cmd_size(t_command *cmd)
+int	cmd_size(t_command *cmd)
 {
-	t_command *tmp;
+	t_command	*tmp;
+	int			i;
 
 	tmp = cmd;
-	int i = 0;
+	i = 0;
 	while (tmp)
 	{
 		i++;
