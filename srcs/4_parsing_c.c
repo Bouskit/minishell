@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   4_parsing_c.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: xiazhang <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:37:45 by xiazhang          #+#    #+#             */
-/*   Updated: 2025/04/18 17:37:48 by xiazhang         ###   ########.fr       */
+/*   Updated: 2025/04/24 17:27:34 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,6 @@ t_command	*parse_tokens(char *cmd_line, t_env *env, int exit_code)
 			return (free_tokens(tokens), free_cmd(first_cmd), NULL);
 		tokens = tokens->next;
 	}
-	free (tokens);
+	free_tokens(tokens);
 	return (first_cmd);
 }

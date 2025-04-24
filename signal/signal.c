@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 17:53:30 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/23 18:58:20 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/24 17:12:48 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,15 +25,16 @@ void sigf(int signal)
     else if (signal == SIGQUIT)
     {
         if (g_interactive == 1)
-            ft_putstr_fd("^\\Quit (core dumped)\n", STDERR_FILENO);
+            ft_putstr_fd("^\\Quit (core dumped)\n", STDOUT_FILENO);
     }
 }
 
 void handle_sig(void)
 {   
     signal(SIGINT, &sigf);
-    if (g_interactive == 1)
-        signal(SIGQUIT, &sigf);
-    else 
+
+    if (g_interactive == 0)
         signal(SIGQUIT, SIG_IGN);
+    else
+        signal(SIGQUIT, &sigf);
 }

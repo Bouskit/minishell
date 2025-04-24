@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   2_tokenization_b.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: xiazhang <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:28:00 by xiazhang          #+#    #+#             */
-/*   Updated: 2025/04/18 17:28:03 by xiazhang         ###   ########.fr       */
+/*   Updated: 2025/04/23 21:55:44 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ char	*extract_word(char *line, int *i)
 	{
 		if (line[*i] == '\'' || line[*i] == '"')
 			skip_quoted_word(line, i, line[*i]);
+		else if (is_operator(line[*i]))
+			break ;
 		else
 			(*i)++;
 	}
