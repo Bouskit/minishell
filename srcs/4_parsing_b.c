@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   4_parsing_b.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: xiazhang <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:37:55 by xiazhang          #+#    #+#             */
-/*   Updated: 2025/04/18 17:37:57 by xiazhang         ###   ########.fr       */
+/*   Updated: 2025/04/25 13:10:52 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,12 +79,15 @@ t_token	*init_parsing(char *cmd_line, t_env *env, int exit_code, t_index *num)
 	num->cmd_count = 0;
 	token = tokenization(cmd_line);
 	if (!token || !check_syntax(token))
-		return (free_tokens(token), NULL);
+	{
+		free_tokens(token);
+		return (NULL);
+	}
 	free (cmd_line);
 	tokens = expand_tokens(token, env, exit_code);
-	if (!tokens)
-		return (free_tokens(tokens), NULL);
 	free_tokens(token);
+	if (!tokens)
+		return (NULL);
 	return (tokens);
 }
 
