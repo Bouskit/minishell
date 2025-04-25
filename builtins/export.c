@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:22:06 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/17 14:09:56 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/25 21:16:00 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,24 @@
 
 int	update_var(t_env *env, char *name, char *value)
 {
-    t_env *tmp;
+	t_env	*tmp;
 
 	tmp = env;
-    while (tmp)
-    {
-        if (!ft_strcmp(tmp->name, name))
-        {
-            if (value)
-            {
-                free(tmp->value);
-                tmp->value = value;
-            }
-            free(name);
-            return (1);
-        }
-        tmp = tmp->next;
-    }
-    return (0);
+	while (tmp)
+	{
+		if (!ft_strcmp(tmp->name, name))
+		{
+			if (value)
+			{
+				free(tmp->value);
+				tmp->value = value;
+			}
+			free(name);
+			return (1);
+		}
+		tmp = tmp->next;
+	}
+	return (0);
 }
 
 void	new_var(char *args, t_env **e)
@@ -91,10 +91,10 @@ void	export_print(t_env *e)
 	return ;
 }
 
-void swap_export(t_env *loop)
+void	swap_export(t_env *loop)
 {
-	char *name;
-	char *value;
+	char	*name;
+	char	*value;
 
 	name = loop->name;
 	loop->name = loop->next->name;
@@ -104,10 +104,10 @@ void swap_export(t_env *loop)
 	loop->next->value = value;
 }
 
-t_env *copy_export(t_env *e)
+t_env	*copy_export(t_env *e)
 {
 	t_env	*copy;
-	t_env *tmp;
+	t_env	*tmp;
 
 	copy = NULL;
 	tmp = e;

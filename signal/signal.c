@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 17:53:30 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/24 17:12:48 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/25 21:38:51 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ void sigf(int signal)
 void handle_sig(void)
 {   
     signal(SIGINT, &sigf);
-
     if (g_interactive == 0)
         signal(SIGQUIT, SIG_IGN);
     else
