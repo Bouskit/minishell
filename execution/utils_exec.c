@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 23:16:18 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/23 19:54:41 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/26 15:01:14 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,10 @@ void	close_all_pipes(int **pipes)
 	{
 		close(pipes[i][0]);
 		close(pipes[i][1]);
+		free(pipes[i]);
 		i++;
 	}
+	free(pipes);
 }
 
 char	**env_to_envp(t_env *env)

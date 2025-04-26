@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 17:20:21 by xiazhang          #+#    #+#             */
-/*   Updated: 2025/04/25 13:12:44 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/26 15:57:26 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ t_token_type	operator_type(char	*str)
 int	ft_is_space(char c)
 {
 	return (c == ' ' || c == '\n' || c == '\r' || c == '\f' || c == '\t' \
-	|| c == '\v');
+		|| c == '\v');
 }
 
 int	is_operator(char c)

@@ -22,6 +22,8 @@ SRCS = $(SRCS_DIR)/main.c \
 		$(SRCS_DIR)/utils2.c \
 		execution/path.c \
 		execution/exec.c \
+		execution/exec2.c \
+		execution/exec3.c \
 		execution/redirections.c \
 		execution/utils_exec.c \
 		builtins/builtins.c \
@@ -29,6 +31,7 @@ SRCS = $(SRCS_DIR)/main.c \
 		builtins/env.c \
 		builtins/exit.c \
 		builtins/export.c \
+		builtins/export2.c \
 		builtins/pwd.c \
 		builtins/unset.c \
 		builtins/cd.c \
