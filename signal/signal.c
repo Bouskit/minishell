@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 17:53:30 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/26 15:22:29 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/26 17:37:22 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void sigf(int signal)
     }
     else if (signal == SIGQUIT)
     {
-        ft_putstr_fd("^\\Quit (core dumped)\n", STDOUT_FILENO);
+        ft_putstr_fd("^\\Quit (core dumped)\n", STDERR_FILENO);
     }
 }
 

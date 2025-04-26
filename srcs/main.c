@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 13:52:34 by xiazhang          #+#    #+#             */
-/*   Updated: 2025/04/24 17:33:00 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/26 17:32:13 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	g_interactive = 0;
 
-static int	init_main(t_mini *mini, int argc, char **argv, char **envp)
+int	init_main(t_mini *mini, int argc, char **argv, char **envp)
 {
 	(void)argc, (void)argv;
 	mini->env = NULL;
