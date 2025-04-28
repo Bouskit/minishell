@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/26 17:53:41 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/25 21:22:27 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/28 19:47:44 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	new_str = (char *)malloc(sizeof(char) * (s1_len + s2_len + 1));
 	if (!new_str)
 		return (NULL);
-	ft_memcpy(new_str, s1, s1_len);         
+	ft_memcpy(new_str, s1, s1_len);
 	ft_memcpy(new_str + s1_len, s2, s2_len);
 	new_str[s1_len + s2_len] = '\0';
 	return (new_str);

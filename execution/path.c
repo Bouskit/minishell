@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 23:19:29 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/23 14:56:55 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/28 17:53:55 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,13 +79,14 @@ char	*find_path(char *cmd, t_env *env)
 	char	*tmp;
 	int		i;
 
-	i = 0;
+	i = -1;
 	if (!cmd)
 		return (NULL);
-	if (!(fullpath = ft_split(path_env(env), ':')))
+	fullpath = ft_split(path_env(env), ':');
+	if (!fullpath)
 		return (NULL);
 	path_with_cmd = add_cmd_to_paths(fullpath, cmd);
-	while (path_with_cmd[i])
+	while (path_with_cmd[++i])
 	{
 		if (access(path_with_cmd[i], F_OK) == 0)
 		{
@@ -94,7 +95,6 @@ char	*find_path(char *cmd, t_env *env)
 			free_doublechar(fullpath);
 			return (tmp);
 		}
-		i++;
 	}
 	free_doublechar(fullpath);
 	free_doublechar(path_with_cmd);

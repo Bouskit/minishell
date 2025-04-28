@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 15:58:42 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/26 16:01:09 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/28 17:51:06 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,14 @@ char	*command_path(t_command *cmd, t_env *env, char **env_array)
 			free_exitcode(cmd, env, env_array, 126);
 		}
 	}
-	else if (!(path = find_path(cmd->args[0], env)))
+	else
 	{
-		ft_putstr3("minishell: ", cmd->args[0], ": command not found\n", 2);
-		free_exitcode(cmd, env, env_array, 127);
+		path = find_path(cmd->args[0], env);
+		if (!path)
+		{
+			ft_putstr3("minishell: ", cmd->args[0], ": command not found\n", 2);
+			free_exitcode(cmd, env, env_array, 127);
+		}
 	}
 	return (path);
 }

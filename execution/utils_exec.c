@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 23:16:18 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/26 15:01:14 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/28 16:23:11 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ int	**create_pipes(int nb_cmd)
 void	do_heredoc(int pipehd[2], char *limiter)
 {
 	char	*line;
-	int fd;
+	int		fd;
 
 	limiter = ft_strjoin(limiter, "\n");
 	fd = open("/dev/tty", O_WRONLY);

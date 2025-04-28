@@ -6,11 +6,19 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 23:14:15 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/26 16:03:27 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/28 19:43:05 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+
+void	close_parent_pipes(int **pipes, int num_cmds, int i)
+{
+	if (i > 0)
+		close(pipes[i - 1][0]);
+	if (i < num_cmds - 1)
+		close(pipes[i][1]);
+}
 
 int	execute_pipe(t_command *cmd, t_env *env, int exit_code)
 {
@@ -21,7 +29,8 @@ int	execute_pipe(t_command *cmd, t_env *env, int exit_code)
 
 	i = 0;
 	num_cmds = cmd_size(cmd);
-	if (!(pipes = create_pipes(num_cmds)))
+	pipes = create_pipes(num_cmds);
+	if (!pipes)
 		return (1);
 	while (cmd)
 	{
@@ -32,10 +41,7 @@ int	execute_pipe(t_command *cmd, t_env *env, int exit_code)
 			close_unused_pipes(pipes, num_cmds, i);
 			child_command(cmd, env);
 		}
-		if (i > 0)
-			close(pipes[i - 1][0]);
-		if (i < num_cmds - 1)
-			close(pipes[i][1]);
+		close_parent_pipes(pipes, num_cmds, i);
 		cmd = cmd->next;
 		i++;
 	}
@@ -64,10 +70,10 @@ void	child_command(t_command *cmd, t_env *env)
 	free_exitcode(cmd, env, env_array, 127);
 }
 
-int special_case(t_command *cmd, int exit_code)
+int	special_case(t_command *cmd, int exit_code)
 {
-	int stdin_cpy;
-	int stdout_cpy;
+	int	stdin_cpy;
+	int	stdout_cpy;
 
 	stdin_cpy = dup(STDIN_FILENO);
 	stdout_cpy = dup(STDOUT_FILENO);
@@ -77,7 +83,6 @@ int special_case(t_command *cmd, int exit_code)
 	close(stdin_cpy);
 	close(stdout_cpy);
 	return (exit_code);
-
 }
 
 int	execute(t_command *cmd, t_env *env)
@@ -86,12 +91,12 @@ int	execute(t_command *cmd, t_env *env)
 
 	exit_code = 0;
 	g_interactive = 1;
-	if (!cmd->args || !cmd->args[0]) 
+	if (!cmd->args || !cmd->args[0])
 	{
 		exit_code = special_case(cmd, exit_code);
 		g_interactive = 0;
 		return (exit_code);
-    }
+	}
 	if (cmd_size(cmd) > 1)
 		exit_code = execute_pipe(cmd, env, exit_code);
 	else

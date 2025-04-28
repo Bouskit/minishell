@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 14:47:17 by bboukach          #+#    #+#             */
-/*   Updated: 2025/03/31 19:07:22 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/28 20:19:18 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,9 +71,7 @@ void				ft_putendl_fd(char *s, int fd);
 void				ft_putnbr_fd(int n, int fd);
 
 int					ft_strcmp(char *s1, char *s2);
-char	*ft_strcat(char *dest, const char *src);
-
-//-----------------------------------------    			LIBFT LISTES
+char				*ft_strcat(char *dest, const char *src);
 
 typedef struct s_list
 {

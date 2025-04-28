@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 16:00:16 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/26 17:38:17 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/04/28 16:24:25 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,21 @@ int	execute_one_builtin(t_command *cmd, t_env *env, int exit_code)
 	return (exit_code);
 }
 
+int	get_exit_status(pid_t pid, int exit_code)
+{
+	int	status;
+
+	waitpid(pid, &status, 0);
+	if (WIFEXITED(status))
+		exit_code = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		exit_code = 128 + WTERMSIG(status);
+	return (exit_code);
+}
+
 int	execute_one_command(t_command *cmd, t_env *env, int exit_code)
 {
 	pid_t	pid;
-	int		status;
 	char	*path;
 	char	**env_array;
 
@@ -52,10 +63,5 @@ int	execute_one_command(t_command *cmd, t_env *env, int exit_code)
 		execve(path, cmd->args, env_array);
 		free_exitcode(cmd, env, env_array, 127);
 	}
-	waitpid(pid, &status, 0);
-	if (WIFEXITED(status))
-		exit_code = WEXITSTATUS(status);
-	else if (WIFSIGNALED(status))
-		exit_code = 128 + WTERMSIG(status);
-	return (exit_code);
+	return (get_exit_status(pid, exit_code));
 }
