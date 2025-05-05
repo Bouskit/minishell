@@ -88,5 +88,6 @@ void	export_print(t_env *e)
 			printf("export %s\n", tmp->name);
 		tmp = tmp->next;
 	}
+	free_env(e);
 	return ;
 }

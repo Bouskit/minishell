@@ -38,6 +38,5 @@ t_command	*parse_tokens(char *cmd_line, t_env *env, int exit_code)
 			return (free_tokens(tokens), free_cmd(first_cmd), NULL);
 		tokens = tokens->next;
 	}
-	free_tokens(tofree);
-	return (first_cmd);
+	return (free_tokens(tofree), first_cmd);
 }

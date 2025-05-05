@@ -65,11 +65,47 @@ int	execute_one_command(t_command *cmd, t_env *env, int exit_code)
 				|| ft_strcmp(cmd->args[0], "minishell") == 0))
 			increment_shlvl(&env);
 		env_array = env_to_envp(env);
-		redir_in_and_out(cmd);
+		if (redir_in_and_out(cmd) < 0)
+			free_exitcode(head, env, env_array, 1);
 		path = command_path(head, cmd, env, env_array);
 		signal(SIGQUIT, &sigf);
 		execve(path, cmd->args, env_array);
 		free_exitcode(cmd, env, env_array, 127);
 	}
 	return (get_exit_status(pid, exit_code));
+}
+
+void	child_setup(int num_cmds, int i, int **pipes)
+{
+	redir_pipes(num_cmds, i, pipes);
+	close_unused_pipes(pipes, num_cmds, i);
+	close_all_pipes(pipes);
+}
+
+pid_t	pipe_loop(t_command *cmd, t_env *env, int **pipes, int num_cmds)
+{
+	t_command	*head;
+	pid_t		pid;
+	int			i;
+
+	head = cmd;
+	i = 0;
+	while (cmd)
+	{
+		if (!cmd->args || !cmd->args[0])
+		{
+			close_all_pipes(pipes);
+			return (127);
+		}
+		pid = fork();
+		if (pid == 0)
+		{
+			child_setup(num_cmds, i, pipes);
+			child_command(head, cmd, env);
+		}
+		close_parent_pipes(pipes, num_cmds, i);
+		cmd = cmd->next;
+		i++;
+	}
+	return (pid);
 }

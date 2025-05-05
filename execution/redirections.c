@@ -12,7 +12,7 @@
 
 #include "../include/minishell.h"
 
-void	handle_infile(int *fd, int *pipehd, char *infile, int is_heredoc)
+int	handle_infile(int *fd, int *pipehd, char *infile, int is_heredoc)
 {
 	if (is_heredoc)
 	{
@@ -27,12 +27,13 @@ void	handle_infile(int *fd, int *pipehd, char *infile, int is_heredoc)
 		if (*fd < 0)
 		{
 			perror(infile);
-			exit(1);
+			return (-1);
 		}
 	}
+	return (0);
 }
 
-void	redir_in(t_command *cmd)
+int	redir_in(t_command *cmd)
 {
 	int	x;
 	int	fd;
@@ -44,7 +45,8 @@ void	redir_in(t_command *cmd)
 	{
 		while (cmd->infile[x])
 		{
-			handle_infile(&fd, pipehd, cmd->infile[x], cmd->in[x]);
+			if (handle_infile(&fd, pipehd, cmd->infile[x], cmd->in[x]) < 0)
+				return (-1);
 			x++;
 		}
 		if (x > 0 && cmd->in[x - 1])
@@ -57,6 +59,7 @@ void	redir_in(t_command *cmd)
 		if (fd > 0)
 			close(fd);
 	}
+	return (0);
 }
 
 void	redir_out(t_command *cmd)

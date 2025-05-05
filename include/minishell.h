@@ -41,7 +41,7 @@ typedef struct s_env
 	struct s_env		*next;
 }						t_env;
 
-typedef enum e_token_type // add builtin
+typedef enum e_token_type
 {
 	WORD,
 	PIPE,
@@ -201,7 +201,7 @@ void					child_command(t_command *head, t_command *cmd,
 int						special_case(t_command *cmd, int exit_code);
 int						execute(t_command *cmd, t_env *env);
 
-void					redir_in_and_out(t_command *cmd);
+int						redir_in_and_out(t_command *cmd);
 void					free_exitcode(t_command *cmd, t_env *env,
 							char **env_array, int exitcode);
 void					close_unused_pipes(int **pipes, int num_cmds, int i);
@@ -215,9 +215,16 @@ int						execute_one_builtin(t_command *cmd, t_env *env,
 int						execute_one_command(t_command *cmd, t_env *env,
 							int exit_code);
 
+void					child_setup(int num_cmds, int i, int **pipes);
+
+pid_t					pipe_loop(t_command *cmd, t_env *env, int **pipes,
+							int num_cmds);
+
+void					close_parent_pipes(int **pipes, int num_cmds, int i);
+
 // redirections
 
-void					redir_in(t_command *cmd);
+int						redir_in(t_command *cmd);
 void					redir_out(t_command *cmd);
 void					redir_pipes(int num_cmds, int i, int **pipes);
 

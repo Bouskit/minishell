@@ -12,10 +12,12 @@
 
 #include "../include/minishell.h"
 
-void	redir_in_and_out(t_command *cmd)
+int	redir_in_and_out(t_command *cmd)
 {
-	redir_in(cmd);
+	if (redir_in(cmd) < 0)
+		return (-1);
 	redir_out(cmd);
+	return (0);
 }
 
 void	free_exitcode(t_command *cmd, t_env *env, char **env_array,

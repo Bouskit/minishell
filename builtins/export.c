@@ -68,7 +68,6 @@ void	export_sort(t_env *e)
 		}
 	}
 	export_print(copy);
-	free_env(copy);
 }
 
 int	do_export(char **args, t_env **e)
