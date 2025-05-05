@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 16:00:16 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/28 16:24:25 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/05/04 23:05:33 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,12 @@ int	execute_one_builtin(t_command *cmd, t_env *env, int exit_code)
 	stdout_cpy = dup(STDOUT_FILENO);
 	redir_in_and_out(cmd);
 	exit_code = execute_builtin(cmd, env);
+	if (cmd->args[0] && ft_strcmp(cmd->args[0], "exit") == 0)
+	{
+		free_cmd(cmd);
+		free_env(env);
+		exit(exit_code);
+	}
 	dup2(stdin_cpy, STDIN_FILENO);
 	dup2(stdout_cpy, STDOUT_FILENO);
 	close(stdin_cpy);
@@ -42,10 +48,12 @@ int	get_exit_status(pid_t pid, int exit_code)
 
 int	execute_one_command(t_command *cmd, t_env *env, int exit_code)
 {
-	pid_t	pid;
-	char	*path;
-	char	**env_array;
+	pid_t		pid;
+	char		*path;
+	char		**env_array;
+	t_command	*head;
 
+	head = cmd;
 	if (!cmd->args || !cmd->args[0])
 		return (special_case(cmd, exit_code));
 	if (is_builtin(cmd->args[0]))
@@ -58,7 +66,7 @@ int	execute_one_command(t_command *cmd, t_env *env, int exit_code)
 			increment_shlvl(&env);
 		env_array = env_to_envp(env);
 		redir_in_and_out(cmd);
-		path = command_path(cmd, env, env_array);
+		path = command_path(head, cmd, env, env_array);
 		signal(SIGQUIT, &sigf);
 		execve(path, cmd->args, env_array);
 		free_exitcode(cmd, env, env_array, 127);

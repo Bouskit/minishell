@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 13:55:40 by xiazhang          #+#    #+#             */
-/*   Updated: 2025/04/28 19:45:43 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/05/04 23:07:43 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,7 +196,8 @@ t_token					*expand_tokens(t_token *token, t_env *env,
 // exec
 
 int						execute_pipe(t_command *cmd, t_env *env, int exit_code);
-void					child_command(t_command *cmd, t_env *env);
+void					child_command(t_command *head, t_command *cmd,
+							t_env *env);
 int						special_case(t_command *cmd, int exit_code);
 int						execute(t_command *cmd, t_env *env);
 
@@ -204,8 +205,8 @@ void					redir_in_and_out(t_command *cmd);
 void					free_exitcode(t_command *cmd, t_env *env,
 							char **env_array, int exitcode);
 void					close_unused_pipes(int **pipes, int num_cmds, int i);
-char					*command_path(t_command *cmd, t_env *env,
-							char **env_array);
+char					*command_path(t_command *head, t_command *cmd,
+							t_env *env, char **enva);
 int						wait_exitcode(int **pipes, int num_cmds, pid_t last_pid,
 							int exit_code);
 

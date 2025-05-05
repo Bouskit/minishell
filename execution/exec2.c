@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 15:58:42 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/28 17:51:06 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/05/04 23:07:25 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	close_unused_pipes(int **pipes, int num_cmds, int i)
 	}
 }
 
-char	*command_path(t_command *cmd, t_env *env, char **env_array)
+char	*command_path(t_command *head, t_command *cmd, t_env *env, char **enva)
 {
 	char	*path;
 
@@ -54,7 +54,7 @@ char	*command_path(t_command *cmd, t_env *env, char **env_array)
 		else
 		{
 			ft_putstr3("minishell: ", cmd->args[0], ": Permission denied\n", 2);
-			free_exitcode(cmd, env, env_array, 126);
+			free_exitcode(head, env, enva, 126);
 		}
 	}
 	else
@@ -63,7 +63,7 @@ char	*command_path(t_command *cmd, t_env *env, char **env_array)
 		if (!path)
 		{
 			ft_putstr3("minishell: ", cmd->args[0], ": command not found\n", 2);
-			free_exitcode(cmd, env, env_array, 127);
+			free_exitcode(head, env, enva, 127);
 		}
 	}
 	return (path);

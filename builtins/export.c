@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:22:06 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/26 15:55:39 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/05/04 23:05:38 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ t_env	*copy_export(t_env *e)
 	tmp = e;
 	while (tmp)
 	{
-		env_addback(&copy, env_new(tmp->name, tmp->value));
+		env_addback(&copy, env_new(ft_strdup(tmp->name),
+				ft_strdup(tmp->value)));
 		tmp = tmp->next;
 	}
 	return (copy);
@@ -67,6 +68,7 @@ void	export_sort(t_env *e)
 		}
 	}
 	export_print(copy);
+	free_env(copy);
 }
 
 int	do_export(char **args, t_env **e)

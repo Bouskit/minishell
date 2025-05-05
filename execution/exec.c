@@ -6,7 +6,7 @@
 /*   By: bboukach <bboukach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 23:14:15 by bboukach          #+#    #+#             */
-/*   Updated: 2025/04/28 19:43:05 by bboukach         ###   ########.fr       */
+/*   Updated: 2025/05/04 23:05:25 by bboukach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,24 +22,32 @@ void	close_parent_pipes(int **pipes, int num_cmds, int i)
 
 int	execute_pipe(t_command *cmd, t_env *env, int exit_code)
 {
-	pid_t	pid;
-	int		**pipes;
-	int		i;
-	int		num_cmds;
+	pid_t		pid;
+	int			**pipes;
+	int			i;
+	int			num_cmds;
+	t_command	*head;
 
 	i = 0;
 	num_cmds = cmd_size(cmd);
 	pipes = create_pipes(num_cmds);
 	if (!pipes)
 		return (1);
+	head = cmd;
 	while (cmd)
 	{
+		if (!cmd->args || !cmd->args[0])
+		{
+			close_all_pipes(pipes);
+			return (exit_code);
+		}
 		pid = fork();
 		if (pid == 0)
 		{
 			redir_pipes(num_cmds, i, pipes);
 			close_unused_pipes(pipes, num_cmds, i);
-			child_command(cmd, env);
+			close_all_pipes(pipes);
+			child_command(head, cmd, env);
 		}
 		close_parent_pipes(pipes, num_cmds, i);
 		cmd = cmd->next;
@@ -48,11 +56,14 @@ int	execute_pipe(t_command *cmd, t_env *env, int exit_code)
 	return (wait_exitcode(pipes, num_cmds, pid, exit_code));
 }
 
-void	child_command(t_command *cmd, t_env *env)
+void	child_command(t_command *head, t_command *cmd, t_env *env)
 {
 	char	*path;
 	char	**env_array;
+	int		ret;
 
+	if (!cmd || !cmd->args || !cmd->args[0])
+		exit(0);
 	if (cmd->args[0] && (ft_strcmp(cmd->args[0], "./minishell") == 0
 			|| ft_strcmp(cmd->args[0], "minishell") == 0))
 		increment_shlvl(&env);
@@ -60,14 +71,14 @@ void	child_command(t_command *cmd, t_env *env)
 	redir_in_and_out(cmd);
 	if (is_builtin(cmd->args[0]))
 	{
-		free_doublechar(env_array);
-		exit(execute_builtin(cmd, env));
+		ret = execute_builtin(cmd, env);
+		free_exitcode(head, env, env_array, ret);
 	}
-	path = command_path(cmd, env, env_array);
+	path = command_path(head, cmd, env, env_array);
 	signal(SIGQUIT, &sigf);
 	execve(path, cmd->args, env_array);
 	perror("minishell:");
-	free_exitcode(cmd, env, env_array, 127);
+	free_exitcode(head, env, env_array, 127);
 }
 
 int	special_case(t_command *cmd, int exit_code)
